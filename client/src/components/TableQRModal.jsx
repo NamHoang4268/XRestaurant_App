@@ -3,7 +3,8 @@ import QRCode from 'react-qr-code';
 import { FiX, FiDownload, FiCopy, FiExternalLink } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
-const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+// Tự động lấy domain hiện tại – đúng cho cả local và Vercel
+const FRONTEND_URL = window.location.origin;
 
 export default function TableQRModal({ table, close }) {
     const qrRef = useRef(null);
