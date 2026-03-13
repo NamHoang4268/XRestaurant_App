@@ -92,8 +92,8 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["ADMIN", "WAITER", "CHEF", "CASHIER", "GUEST", "TABLE"],
-        default: "GUEST",
+        enum: ["ADMIN", "WAITER", "CHEF", "CASHIER", "CUSTOMER", "TABLE"],
+        default: "CUSTOMER",
     },
     // Employee-specific fields
     employeeId: {

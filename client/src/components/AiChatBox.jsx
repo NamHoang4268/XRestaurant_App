@@ -73,7 +73,7 @@ export default function AiChatBox() {
     const [messages, setMessages] = useState([
         {
             role: 'bot',
-            text: 'Xin chào! 👋 Tôi là trợ lý AI của TechCommerce. Tôi có thể giúp bạn tìm sản phẩm, giải đáp thắc mắc về đơn hàng, chính sách và nhiều hơn nữa. Bạn cần hỗ trợ gì?',
+            text: 'Xin chào! 👋 Tôi là trợ lý AI của EatEase. Tôi có thể giúp bạn tìm sản phẩm, giải đáp thắc mắc về đơn hàng, chính sách và nhiều hơn nữa. Bạn cần hỗ trợ gì?',
         },
     ]);
     const messagesEndRef = useRef(null);
@@ -216,7 +216,7 @@ export default function AiChatBox() {
                                 <div className="flex items-center gap-1">
                                     <span className="w-1.5 h-1.5 bg-green-400 rounded-full" />
                                     <p className="text-violet-200 text-[11px]">
-                                        TechCommerce
+                                        EatEase
                                     </p>
                                 </div>
                             </div>

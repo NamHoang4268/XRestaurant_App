@@ -717,7 +717,7 @@ export async function googleLoginController(req, res) {
                     googleId,
                     avatar: picture || "",
                     verify_email: true,
-                    role: "USER",
+                    role: "CUSTOMER",
                     status: "Active"
                 });
                 await user.save();
