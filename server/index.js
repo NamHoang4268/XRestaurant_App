@@ -101,6 +101,9 @@ app.use('/api/chat', chatRouter);
 app.use('/api/support', supportChatRouter);
 app.use('/api/customer', customerRouter);
 app.use('/api/kitchen', kitchenRouter);
+import orderRouter from './route/order.route.js';
+app.use('/api/order', orderRouter);
+
 
 connectDB().then(() => {
     httpServer.listen(PORT, () => {
