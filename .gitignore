@@ -26,6 +26,7 @@ dist-ssr
 # manual changes
 client/node_modules
 server/node_modules
+client/.vite_cache
 .env
 .client/.env
 .server/.env
