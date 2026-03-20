@@ -44,6 +44,16 @@ const BillPage = () => {
     const canPay = ['ADMIN', 'MANAGER', 'CASHIER'].includes(user?.role);
 
     const [searchTerm, setSearchTerm] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchTerm.trim().toLowerCase());
+            setCurrentPage(1); // Reset page on new search
+        }, 300); // 300ms debounce
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
+
     const [filterParams, setFilterParams] = useState({
         status: '',
         startDate: '',
@@ -130,25 +140,6 @@ const BillPage = () => {
                 const endDate = new Date(filterParams.endDate);
                 endDate.setHours(23, 59, 59, 999);
                 result = result.filter((order) => new Date(order.createdAt) <= endDate);
-            }
-
-            if (searchTerm.trim()) {
-                const searchLower = searchTerm.trim().toLowerCase();
-                result = result.filter((order) => {
-                    const searchFields = [
-                        order.orderId,
-                        order.tableNumber,
-                        order.userId?.name,
-                        order.userId?.mobile,
-                        order.payment_status,
-                        ...(order.products?.flatMap((p) => [p.name, p.sku]) || []),
-                        order.product_details?.name,
-                    ].filter(Boolean);
-
-                    return searchFields.some((field) =>
-                        String(field).toLowerCase().includes(searchLower)
-                    );
-                });
             }
 
             setFilteredOrders(result);
@@ -250,15 +241,33 @@ const BillPage = () => {
         );
     }, [filteredOrders]);
 
+    // Apply search on grouped orders
+    const searchedOrders = useMemo(() => {
+        if (!debouncedSearch) return groupedOrders;
+        
+        return groupedOrders.filter(group => {
+            const searchFields = [
+                group.orderId,        // Virtual ID
+                group.tableNumber,    // Số bàn
+                ...(group.originalOrderIds || []), // Các ID thật từ db (Mã đơn hàng gốc)
+                ...(group.documentIds || [])       // ObjectID database
+            ].filter(Boolean);
+            
+            return searchFields.some(field => 
+                String(field).toLowerCase().includes(debouncedSearch)
+            );
+        });
+    }, [groupedOrders, debouncedSearch]);
+
     const { totalRevenue, orderCount } = useMemo(() => {
-        return groupedOrders.reduce(
+        return searchedOrders.reduce(
             (acc, order) => ({
                 totalRevenue: acc.totalRevenue + (order.totalAmt || 0),
                 orderCount: acc.orderCount + 1,
             }),
             { totalRevenue: 0, orderCount: 0 }
         );
-    }, [groupedOrders]);
+    }, [searchedOrders]);
 
     const getStatusBadge = (status) => {
         const statusConfig = {
@@ -396,13 +405,13 @@ const BillPage = () => {
     };
 
     // Calculate Pagination
-    const totalItems = groupedOrders.length;
+    const totalItems = searchedOrders.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
     const validCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
 
     // Synchronize currentPage if validCurrentPage differs due to filtering
     useEffect(() => {
-        if (currentPage !== validCurrentPage) {
+        if (currentPage !== validCurrentPage && validCurrentPage >= 1) {
             setCurrentPage(validCurrentPage);
         }
     }, [currentPage, validCurrentPage]);
@@ -410,7 +419,7 @@ const BillPage = () => {
     const startIndex = (validCurrentPage - 1) * pageSize;
     const endIndex = Math.min(startIndex + pageSize, totalItems);
     
-    const paginatedOrders = groupedOrders.slice(startIndex, endIndex);
+    const paginatedOrders = searchedOrders.slice(startIndex, endIndex);
 
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages) {
@@ -454,7 +463,7 @@ const BillPage = () => {
                     </div>
                     <div>
                         <p className="text-xs font-bold">Đang hiển thị</p>
-                        <p className="text-xl font-bold">{groupedOrders.length} / {groupedOrders.length}</p>
+                        <p className="text-xl font-bold">{paginatedOrders.length} / {searchedOrders.length}</p>
                     </div>
                 </div>
             </div>
@@ -470,10 +479,7 @@ const BillPage = () => {
                                 placeholder="Mã đơn, Số bàn..."
                                 className="w-full pl-10 h-10 text-sm placeholder:text-foreground border-foreground bg-transparent"
                                 value={searchTerm}
-                                onChange={(e) => {
-                                    setSearchTerm(e.target.value);
-                                    setCurrentPage(1);
-                                }}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                             />
                             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 opacity-50" />
                         </div>
