@@ -43,13 +43,26 @@ const TableLoginPage = () => {
                     // Save user details to Redux
                     dispatch(setUserDetails(response.data.data.user));
 
-                    toast.success(
-                        `Chào mừng đến ${response.data.data.user.name}!`
-                    );
+                    // AC 5.1 / 5.2 – phân biệt phiên mới vs tham gia phiên hiện tại
+                    const { hasActiveSession, activeOrderItemCount } =
+                        response.data.data.sessionInfo || {};
 
-                    // Redirect to customer check-in (Phase 2 – loyalty onboarding)
+                    if (hasActiveSession) {
+                        toast(`🍽️ Bàn đang có ${activeOrderItemCount} món đã gọi. Bạn đang tham gia phiên hiện tại!`, {
+                            duration: 4000,
+                            icon: '🪑',
+                        });
+                    } else {
+                        toast.success('Chào mừng! Phiên gọi món mới đã được khởi tạo 🍽️', {
+                            duration: 3000,
+                        });
+                    }
+
+                    // Redirect sang customer checkin (loyalty), truyền hasActiveSession để checkin page biết
                     const { tableId, tableNumber } = response.data.data.user;
-                    navigate(`/customer-checkin?tableId=${tableId}&tableNumber=${encodeURIComponent(tableNumber || '')}`);
+                    navigate(
+                        `/customer-checkin?tableId=${tableId}&tableNumber=${encodeURIComponent(tableNumber || '')}&hasActiveSession=${hasActiveSession ? '1' : '0'}`
+                    );
                 } else {
                     setError(response.data.message || 'Đăng nhập thất bại');
                 }
@@ -72,7 +85,8 @@ const TableLoginPage = () => {
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
                 <div className="text-center">
                     <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-lg text-gray-700">Đang đăng nhập...</p>
+                    <p className="text-lg text-gray-700">Đang xác thực mã QR...</p>
+                    <p className="text-sm text-gray-400 mt-1">Vui lòng chờ trong giây lát</p>
                 </div>
             </div>
         );
@@ -98,9 +112,9 @@ const TableLoginPage = () => {
                         </svg>
                     </div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                        Đăng nhập thất bại
+                        Mã QR không hợp lệ
                     </h2>
-                    <p className="text-gray-600 mb-6">{error}</p>
+                    <p className="text-gray-500 mb-6">{error}</p>
                     <button
                         onClick={() => navigate('/')}
                         className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"

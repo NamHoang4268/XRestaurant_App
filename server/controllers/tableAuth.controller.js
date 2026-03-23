@@ -1,5 +1,6 @@
 import UserModel from "../models/user.model.js";
 import TableModel from "../models/table.model.js";
+import TableOrderModel from "../models/tableOrder.model.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { verifyTableToken, generateTableQRCode } from "../utils/qrCodeGenerator.js";
@@ -103,7 +104,7 @@ export async function loginViaQRController(request, response) {
             decoded = verifyTableToken(token);
         } catch (error) {
             return response.status(401).json({
-                message: "Token không hợp lệ hoặc đã hết hạn",
+                message: "Mã QR không hợp lệ.",
                 error: true,
                 success: false
             });
@@ -168,8 +169,18 @@ export async function loginViaQRController(request, response) {
         response.cookie('accessToken', accessToken, cookieOptions);
         response.cookie('refreshToken', refreshToken, cookieOptions);
 
+        // Check if table already has an active ordering session (AC 5.1 / 5.2)
+        const activeOrder = await TableOrderModel.findOne({
+            tableId: table._id,
+            status: 'active'
+        });
+        const hasActiveSession = !!activeOrder;
+        const activeOrderItemCount = activeOrder ? activeOrder.items.length : 0;
+
         return response.status(200).json({
-            message: "Đăng nhập thành công",
+            message: hasActiveSession
+                ? "Bàn đang có phiên gọi món. Tham gia phiên hiện tại."
+                : "Đăng nhập thành công. Khởi tạo phiên gọi món mới.",
             data: {
                 accessToken,
                 refreshToken,
@@ -182,6 +193,10 @@ export async function loginViaQRController(request, response) {
                     tableNumber: table.tableNumber,
                     tableCapacity: table.capacity,
                     tableLocation: table.location
+                },
+                sessionInfo: {
+                    hasActiveSession,
+                    activeOrderItemCount
                 }
             },
             error: false,
