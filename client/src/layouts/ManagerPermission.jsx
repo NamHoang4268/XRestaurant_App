@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 const ManagerPermission = ({ children }) => {
     const user = useSelector((state) => state.user);
 
-    // Allow ADMIN and MANAGER
-    const hasPermission = ['ADMIN', 'MANAGER'].includes(user?.role);
+    // MANAGER role đã bị xóa – chỉ còn ADMIN có quyền
+    const hasPermission = user?.role === 'ADMIN';
 
     return (
         <>
@@ -13,8 +13,8 @@ const ManagerPermission = ({ children }) => {
                 children
             ) : (
                 <p className="text-red-600 bg-red-100 p-4 rounded">
-                    Bạn không có quyền truy cập. Chỉ Admin và Manager mới có thể
-                    truy cập trang này.
+                    Bạn không có quyền truy cập. Chỉ Admin mới có thể truy cập
+                    trang này.
                 </p>
             )}
         </>
@@ -22,3 +22,4 @@ const ManagerPermission = ({ children }) => {
 };
 
 export default ManagerPermission;
+

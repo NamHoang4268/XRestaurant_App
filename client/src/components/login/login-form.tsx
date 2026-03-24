@@ -18,6 +18,7 @@ import AxiosToastError from '@/utils/AxiosToastError';
 import Loading from '../Loading';
 import { useGoogleLogin } from '@react-oauth/google';
 import { FaGoogle } from 'react-icons/fa';
+import { getRoleHomePath } from '@/utils/routePermissions';
 
 export function LoginForm({
     className,
@@ -108,7 +109,7 @@ export function LoginForm({
                 const userDetails = await fetchUserDetails();
                 dispatch(setUserDetails(userDetails.data));
                 setData({ email: '', password: '' });
-                navigate('/');
+                navigate(getRoleHomePath(userDetails.data?.role));
             }
         } catch (error) {
             AxiosToastError(error);
@@ -144,7 +145,7 @@ export function LoginForm({
                     );
                     const userDetails = await fetchUserDetails();
                     dispatch(setUserDetails(userDetails.data));
-                    navigate('/');
+                    navigate(getRoleHomePath(userDetails.data?.role));
                 }
             } catch (error) {
                 AxiosToastError(error);

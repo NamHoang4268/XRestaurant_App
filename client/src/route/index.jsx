@@ -14,6 +14,8 @@ import Profile from '../pages/Profile';
 import CategoryPage from './../pages/CategoryPage';
 import AdminPermission from '../layouts/AdminPermission';
 import TableOrdersPermission from '../layouts/TableOrdersPermission';
+import RoleGuard from '../layouts/RoleGuard';
+import DashboardLayout from '../layouts/DashboardLayout';
 import ProductListPage from '../pages/ProductListPage';
 import ProductDisplayPage from '../pages/ProductDisplayPage';
 import ProtectedRoute from './ProtectedRoute';
@@ -39,6 +41,7 @@ import CustomerCheckinPage from '../pages/CustomerCheckinPage';
 import WaiterBoardPage from '../pages/WaiterBoardPage';
 import DashboardRouter from '../pages/DashboardRouter';
 import ChefDashboard from '@/pages/ChefDashboard';
+import CashierDashboard from '@/pages/CashierDashboard';
 
 const router = createBrowserRouter([
     {
@@ -86,9 +89,34 @@ const router = createBrowserRouter([
                 ),
             },
 
-            // === KITCHEN & WAITER ===
-            { path: 'waiter-board', element: <WaiterBoardPage /> },
-            { path: 'chef-board', element: <ChefDashboard /> },
+            // === STAFF BOARDS (dùng chung DashboardLayout: Sidebar + TopNav) ===
+            {
+                path: 'waiter-board',
+                element: (
+                    <RoleGuard allowedRoles={['WAITER', 'ADMIN']}>
+                        <DashboardLayout />
+                    </RoleGuard>
+                ),
+                children: [{ index: true, element: <WaiterBoardPage /> }],
+            },
+            {
+                path: 'chef-board',
+                element: (
+                    <RoleGuard allowedRoles={['CHEF', 'ADMIN']}>
+                        <DashboardLayout />
+                    </RoleGuard>
+                ),
+                children: [{ index: true, element: <ChefDashboard /> }],
+            },
+            {
+                path: 'cashier-board',
+                element: (
+                    <RoleGuard allowedRoles={['CASHIER', 'ADMIN']}>
+                        <DashboardLayout />
+                    </RoleGuard>
+                ),
+                children: [{ index: true, element: <CashierDashboard /> }],
+            },
 
             // === AUTH ===
             {

@@ -10,7 +10,16 @@ import {
     FiShoppingBag,
     FiLogOut,
     FiX,
+    FiClock,
 } from 'react-icons/fi';
+
+// Map kitchenStatus → label + màu hiển thị cho khách
+const KITCHEN_STATUS_CONFIG = {
+    pending:  { label: 'Chờ bếp',       className: 'bg-yellow-100 text-yellow-700' },
+    cooking:  { label: 'Đang nấu',      className: 'bg-blue-100 text-blue-700' },
+    ready:    { label: 'Sắp phục vụ',   className: 'bg-purple-100 text-purple-700' },
+    served:   { label: 'Đã phục vụ',   className: 'bg-green-100 text-green-700' },
+};
 
 const TableOrderManagementPage = () => {
     const navigate = useNavigate();
@@ -52,6 +61,12 @@ const TableOrderManagementPage = () => {
             return;
         }
 
+        // AC: Chỉ cho phép thanh toán khi tất cả món đã được phục vụ
+        if (!allServed) {
+            toast.error('Vui lòng chờ tất cả các món được phục vụ trước khi thanh toán.');
+            return;
+        }
+
         try {
             setProcessing(true);
             const response = await Axios({
@@ -62,11 +77,11 @@ const TableOrderManagementPage = () => {
             });
 
             if (response.data.success) {
-                if (paymentMethod === 'cash') {
+                if (paymentMethod === 'at_counter') {
                     toast.success(
-                        'Thanh toán thành công! Vui lòng thanh toán tại quầy.'
+                        '📋 Yêu cầu thanh toán tại quầy đã được gửi. Nhân viên sẽ đến hỗ trợ!',
+                        { duration: 5000 }
                     );
-                    // Navigate back to menu
                     navigate('/table-menu');
                 } else {
                     // Redirect to Stripe
@@ -160,6 +175,14 @@ const TableOrderManagementPage = () => {
         });
     };
 
+    const allServed =
+        tableOrder.items.length > 0 &&
+        tableOrder.items.every((item) => item.kitchenStatus === 'served');
+
+    const pendingCount = tableOrder.items.filter(
+        (item) => item.kitchenStatus !== 'served'
+    ).length;
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
@@ -187,33 +210,47 @@ const TableOrderManagementPage = () => {
                         Món đã gọi
                     </h2>
                     <div className="space-y-3">
-                        {tableOrder.items.map((item, index) => (
-                            <div
-                                key={index}
-                                className="flex justify-between items-start border-b pb-3 last:border-b-0"
-                            >
-                                <div className="flex-1">
-                                    <h3 className="font-semibold text-gray-800">
-                                        {item.name}
-                                    </h3>
-                                    <p className="text-sm text-gray-500">
-                                        Gọi lúc: {formatTime(item.addedAt)}
-                                    </p>
-                                    <p className="text-orange-500 font-bold mt-1">
-                                        {item.price.toLocaleString('vi-VN')}đ x{' '}
-                                        {item.quantity}
-                                    </p>
+                        {tableOrder.items.map((item, index) => {
+                            const statusCfg =
+                                KITCHEN_STATUS_CONFIG[item.kitchenStatus] ??
+                                KITCHEN_STATUS_CONFIG.pending;
+                            return (
+                                <div
+                                    key={index}
+                                    className="flex justify-between items-start border-b pb-3 last:border-b-0"
+                                >
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-gray-800">
+                                            {item.name}
+                                        </h3>
+                                        <p className="text-sm text-gray-500">
+                                            Gọi lúc: {formatTime(item.addedAt)}
+                                        </p>
+                                        <p className="text-orange-500 font-bold mt-1">
+                                            {item.price.toLocaleString('vi-VN')}đ x{' '}
+                                            {item.quantity}
+                                        </p>
+                                        {/* Kitchen status badge */}
+                                        <span
+                                            className={`inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusCfg.className}`}
+                                        >
+                                            {item.kitchenStatus !== 'served' && (
+                                                <FiClock size={10} />
+                                            )}
+                                            {statusCfg.label}
+                                        </span>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-bold text-gray-800">
+                                            {(
+                                                item.price * item.quantity
+                                            ).toLocaleString('vi-VN')}
+                                            đ
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="font-bold text-gray-800">
-                                        {(
-                                            item.price * item.quantity
-                                        ).toLocaleString('vi-VN')}
-                                        đ
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -228,23 +265,36 @@ const TableOrderManagementPage = () => {
                 </div>
 
                 {/* Payment Buttons */}
+                {/* Banner: chỉ hiện khi chưa đủ điều kiện thanh toán */}
+                {!allServed && (
+                    <div className="bg-yellow-50 border border-yellow-300 rounded-xl p-4 flex items-start gap-3">
+                        <FiClock className="text-yellow-500 mt-0.5 shrink-0" size={20} />
+                        <div>
+                            <p className="font-semibold text-yellow-800">Chưa thể thanh toán</p>
+                            <p className="text-sm text-yellow-700 mt-0.5">
+                                Còn <strong>{pendingCount}</strong> món chưa được phục vụ. Vui lòng chờ nhân viên mang món ra bàn trước khi thanh toán.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 <div className="space-y-3">
                     <button
                         onClick={() => handleCheckout('online')}
-                        disabled={processing}
-                        className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                        disabled={processing || !allServed}
+                        className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
                     >
                         <FiCreditCard size={24} />
                         {processing ? 'Đang xử lý...' : 'Thanh toán online'}
                     </button>
 
                     <button
-                        onClick={() => handleCheckout('cash')}
-                        disabled={processing}
-                        className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 hover:from-green-600 hover:to-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                        onClick={() => handleCheckout('at_counter')}
+                        disabled={processing || !allServed}
+                        className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-xl font-semibold text-lg flex items-center justify-center gap-2 hover:from-green-600 hover:to-green-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
                     >
                         <FiDollarSign size={24} />
-                        {processing ? 'Đang xử lý...' : 'Thanh toán tiền mặt'}
+                        {processing ? 'Đang xử lý...' : 'Thanh toán tại quầy'}
                     </button>
 
                     <button

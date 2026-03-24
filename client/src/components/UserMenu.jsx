@@ -330,7 +330,7 @@ const UserMenu = ({ close }) => {
                         </span>
                     </Link>
                 </MenuSection>
-                {/* Restaurant Section - ADMIN, MANAGER, WAITER, CASHIER */}
+                {/* Restaurant Section - ADMIN, WAITER, CASHIER */}
                 <MenuSection
                     title={
                         user.role === 'WAITER' || user.role === 'CASHIER'
@@ -339,11 +339,11 @@ const UserMenu = ({ close }) => {
                     }
                     icon="🍽️"
                     sectionKey="restaurant"
-                    show={['ADMIN', 'MANAGER', 'WAITER', 'CASHIER'].includes(
+                    show={['ADMIN', 'WAITER', 'CASHIER'].includes(
                         user.role
                     )}
                 >
-                    {['ADMIN', 'MANAGER'].includes(user.role) && (
+                    {user.role === 'ADMIN' && (
                         <Link
                             onClick={handleClose}
                             to={'/dashboard/table'}
@@ -358,7 +358,7 @@ const UserMenu = ({ close }) => {
                             </span>
                         </Link>
                     )}
-                    {['MANAGER', 'WAITER'].includes(user.role) && (
+                    {user.role === 'WAITER' && (
                         <Link
                             onClick={handleClose}
                             to={'/dashboard/table-orders'}
@@ -373,7 +373,7 @@ const UserMenu = ({ close }) => {
                             </span>
                         </Link>
                     )}
-                    {['ADMIN', 'MANAGER', 'WAITER'].includes(user.role) && (
+                    {['ADMIN', 'WAITER'].includes(user.role) && (
                         <Link
                             onClick={handleClose}
                             to={'/dashboard/booking'}
@@ -388,7 +388,7 @@ const UserMenu = ({ close }) => {
                             </span>
                         </Link>
                     )}
-                    {['ADMIN', 'MANAGER', 'WAITER', 'CASHIER'].includes(
+                    {['ADMIN', 'WAITER', 'CASHIER'].includes(
                         user.role
                     ) && (
                         <Link
@@ -407,7 +407,7 @@ const UserMenu = ({ close }) => {
                             </span>
                         </Link>
                     )}
-                    {['ADMIN', 'MANAGER'].includes(user.role) && (
+                    {user.role === 'ADMIN' && (
                         <Link
                             onClick={handleClose}
                             to={'/dashboard/report'}
@@ -423,12 +423,12 @@ const UserMenu = ({ close }) => {
                         </Link>
                     )}
                 </MenuSection>
-                {/* HR Section - ADMIN, MANAGER */}
+                {/* HR Section - ADMIN only */}
                 <MenuSection
                     title="Quản lý Nhân sự"
                     icon="👥"
                     sectionKey="hr"
-                    show={['ADMIN', 'MANAGER'].includes(user.role)}
+                    show={user.role === 'ADMIN'}
                 >
                     <Link
                         onClick={handleClose}
@@ -491,12 +491,12 @@ const UserMenu = ({ close }) => {
                         </span>
                     </Link>
                 </MenuSection>
-                {/* Employee Section - MANAGER, WAITER, CHEF, CASHIER */}
+                {/* Employee Section - WAITER, CHEF, CASHIER */}
                 <MenuSection
                     title="Nhân viên"
                     icon="💼"
                     sectionKey="employee"
-                    show={['MANAGER', 'WAITER', 'CHEF', 'CASHIER'].includes(
+                    show={['WAITER', 'CHEF', 'CASHIER'].includes(
                         user.role
                     )}
                 >

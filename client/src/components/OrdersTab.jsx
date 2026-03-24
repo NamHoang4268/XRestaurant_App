@@ -68,8 +68,8 @@ const OrdersTab = () => {
         (state) => state.orders
     );
     const user = useSelector((state) => state.user);
-    // Allow ADMIN and MANAGER to access reports
-    const canAccessReports = ['ADMIN', 'MANAGER'].includes(user?.role);
+    // Allow ADMIN to access reports
+    const canAccessReports = user?.role === 'ADMIN';
     const [imageURL, setImageURL] = useState('');
     const [dateRange, setDateRange] = useState('7days');
     const [chartType, setChartType] = useState('bar');

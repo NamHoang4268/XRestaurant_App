@@ -35,13 +35,13 @@ const BillPage = () => {
         (state) => state.orders
     );
     const user = useSelector((state) => state.user);
-    const canAccessBills = ['ADMIN', 'MANAGER', 'WAITER', 'CASHIER'].includes(
+    const canAccessBills = ['ADMIN', 'WAITER', 'CASHIER'].includes(
         user?.role
     );
     
     // Roles for specific actions
-    const canUpdateStatus = ['ADMIN', 'MANAGER', 'WAITER'].includes(user?.role);
-    const canPay = ['ADMIN', 'MANAGER', 'CASHIER'].includes(user?.role);
+    const canUpdateStatus = ['ADMIN', 'WAITER'].includes(user?.role);
+    const canPay = ['ADMIN', 'CASHIER'].includes(user?.role);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -334,6 +334,10 @@ const BillPage = () => {
 
     const printBill = (orderGroup) => {
         const printWindow = window.open('', '_blank');
+        const total = orderGroup.totalAmt || 0;
+        const desc = encodeURIComponent(`Thanh toan ${orderGroup.orderId} ban ${orderGroup.tableNumber}`);
+        const qrUrl = `https://img.vietqr.io/image/BIDV-6331102124-compact2.png?amount=${total}&addInfo=${desc}&accountName=NGO%20KIM%20HOANG%20NAM`;
+
         const itemsHtml = orderGroup.items.map((item, index) => `
             <tr>
                 <td>${index + 1}</td>
@@ -359,6 +363,10 @@ const BillPage = () => {
                 .text-right { text-align: right; }
                 .text-center { text-align: center; }
                 .total-row td { border-top: 2px solid #333; font-weight: bold; }
+                .qr-section { text-align: center; margin: 20px 0; padding: 16px; border: 1px dashed #ccc; border-radius: 8px; }
+                .qr-section img { width: 180px; height: 180px; }
+                .qr-section p { margin: 4px 0; font-size: 11px; color: #555; }
+                .qr-amount { font-size: 16px; font-weight: bold; color: #e65c00; }
             </style>
             </head><body onload="window.print()">
                 <div class="title">HÓA ĐƠN THANH TOÁN</div>
@@ -376,11 +384,21 @@ const BillPage = () => {
                     <tfoot>
                         <tr class="total-row">
                             <td colspan="4" class="text-right">Tổng thanh toán:</td>
-                            <td class="text-right">${DisplayPriceInVND(orderGroup.totalAmt)}</td>
+                            <td class="text-right">${DisplayPriceInVND(total)}</td>
                         </tr>
                     </tfoot>
                 </table>
-                <div class="signature" style="display:flex; justify-content: space-between; margin-top: 50px;">
+
+                <!-- VietQR Payment QR -->
+                <div class="qr-section">
+                    <p style="font-weight:bold;font-size:13px;margin-bottom:8px">📱 Quét mã QR để thanh toán nhanh</p>
+                    <img src="${qrUrl}" alt="VietQR" />
+                    <p>BIDV &ndash; 6331102124</p>
+                    <p>NGO KIM HOANG NAM</p>
+                    <p class="qr-amount">${DisplayPriceInVND(total)}</p>
+                </div>
+
+                <div class="signature" style="display:flex; justify-content: space-between; margin-top: 30px;">
                     <div class="text-center">Người lập<br><br><br>(Ký, ghi rõ họ tên)</div>
                     <div class="text-center">Khách hàng<br><br><br>(Ký, ghi rõ họ tên)</div>
                 </div>

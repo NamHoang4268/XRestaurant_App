@@ -8,35 +8,43 @@ export const routePermissions = {
     '/dashboard/product': ['ADMIN'],
 
     // Restaurant Management
-    '/dashboard/table': ['ADMIN', 'MANAGER'],
-    '/dashboard/table-orders': ['ADMIN', 'MANAGER', 'WAITER'],
-    '/dashboard/booking': ['ADMIN', 'MANAGER', 'WAITER'],
-    '/dashboard/bill': ['ADMIN', 'MANAGER', 'WAITER', 'CASHIER'],
-    '/dashboard/report': ['ADMIN', 'MANAGER'],
-
-    // HR Management
-    '/dashboard/employee-management': ['ADMIN', 'MANAGER'],
-    '/dashboard/shift-management': ['ADMIN', 'MANAGER'],
-    '/dashboard/attendance-management': ['ADMIN', 'MANAGER'],
+    '/dashboard/table': ['ADMIN'],
+    '/dashboard/table-orders': ['ADMIN', 'WAITER'],
+    '/dashboard/booking': ['ADMIN', 'WAITER'],
+    '/dashboard/bill': ['ADMIN', 'WAITER', 'CASHIER'],
+    '/dashboard/report': ['ADMIN'],
 
     // Reports & Vouchers
     '/dashboard/voucher': ['ADMIN'],
 
     // Employee Features
-    '/dashboard/employee-dashboard': ['MANAGER', 'WAITER', 'CHEF', 'CASHIER'],
-    '/dashboard/my-shifts': ['MANAGER', 'WAITER', 'CHEF', 'CASHIER'],
-    '/dashboard/my-performance': ['MANAGER', 'WAITER', 'CHEF', 'CASHIER'],
+    '/dashboard/employee-dashboard': ['WAITER', 'CHEF', 'CASHIER'],
+    '/dashboard/my-shifts': ['WAITER', 'CHEF', 'CASHIER'],
+    '/dashboard/my-performance': ['WAITER', 'CHEF', 'CASHIER'],
 
     // Personal - USER only
     '/dashboard/address': ['USER'],
     '/dashboard/my-orders': ['USER'],
 
     // Profile (all users)
-    '/dashboard/profile': ['ADMIN', 'MANAGER', 'WAITER', 'CHEF', 'CASHIER', 'USER'],
+    '/dashboard/profile': ['ADMIN', 'WAITER', 'CHEF', 'CASHIER', 'USER'],
 
-    // Dashboard home (all users)
-    '/dashboard': ['ADMIN', 'MANAGER', 'WAITER', 'CHEF', 'CASHIER', 'USER'],
+    // Dashboard home
+    '/dashboard': ['ADMIN', 'WAITER', 'CHEF', 'CASHIER', 'USER'],
 };
+
+/**
+ * Returns the home path for a given role after login.
+ */
+export function getRoleHomePath(role) {
+    switch (role) {
+        case 'ADMIN':   return '/dashboard';
+        case 'CHEF':    return '/chef-board';
+        case 'WAITER':  return '/waiter-board';
+        case 'CASHIER': return '/cashier-board';
+        default:        return '/'; // USER, TABLE, guest
+    }
+}
 
 // Helper function to check if user has permission for a route
 export const hasRoutePermission = (userRole, pathname) => {

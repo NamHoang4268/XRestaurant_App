@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import AdminDashboard from './AdminDashboard';
-import ManagerDashboard from './ManagerDashboard';
 import WaiterDashboard from './WaiterDashboard';
 import CashierDashboard from './CashierDashboard';
 import ChefDashboard from './ChefDashboard';
@@ -17,8 +16,6 @@ const DashboardRouter = () => {
     switch (user.role) {
         case 'ADMIN':
             return <AdminDashboard />;
-        case 'MANAGER':
-            return <ManagerDashboard />;
         case 'WAITER':
             return <WaiterDashboard />;
         case 'CASHIER':

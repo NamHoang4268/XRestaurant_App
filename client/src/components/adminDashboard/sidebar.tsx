@@ -69,37 +69,37 @@ const navigationSections: NavigationSection[] = [
         key: 'restaurant',
         title: 'Quản lý Nhà hàng',
         icon: '🍽️',
-        roles: ['ADMIN', 'MANAGER', 'WAITER', 'CASHIER'],
+        roles: ['ADMIN', 'WAITER', 'CASHIER'],
         items: [
             {
                 name: 'Bàn ăn',
                 href: '/dashboard/table',
                 icon: Utensils,
-                roles: ['ADMIN', 'MANAGER'],
+                roles: ['ADMIN'],
             },
             {
                 name: 'Đơn gọi món',
                 href: '/dashboard/table-orders',
                 icon: FileText,
-                roles: ['MANAGER', 'WAITER'],
+                roles: ['WAITER'],
             },
             {
                 name: 'Đặt bàn',
                 href: '/dashboard/booking',
                 icon: Calendar,
-                roles: ['ADMIN', 'MANAGER', 'WAITER'],
+                roles: ['ADMIN', 'WAITER'],
             },
             {
                 name: 'Hóa đơn',
                 href: '/dashboard/bill',
                 icon: FileText,
-                roles: ['ADMIN', 'MANAGER', 'WAITER', 'CASHIER'],
+                roles: ['ADMIN', 'WAITER', 'CASHIER'],
             },
             {
                 name: 'Báo cáo',
                 href: '/dashboard/report',
                 icon: BarChart2,
-                roles: ['ADMIN', 'MANAGER'],
+                roles: ['ADMIN'],
             },
         ],
     },
@@ -107,7 +107,7 @@ const navigationSections: NavigationSection[] = [
         key: 'hr',
         title: 'Quản lý Nhân sự',
         icon: '👥',
-        roles: ['ADMIN', 'MANAGER'],
+        roles: ['ADMIN'],
         items: [
             {
                 name: 'Nhân viên',
@@ -143,7 +143,7 @@ const navigationSections: NavigationSection[] = [
         key: 'employee',
         title: 'Nhân viên',
         icon: '💼',
-        roles: ['MANAGER', 'WAITER', 'CHEF', 'CASHIER', 'ADMIN'],
+        roles: ['WAITER', 'CHEF', 'CASHIER', 'ADMIN'],
         items: [
             {
                 name: 'Dashboard',
@@ -182,7 +182,7 @@ const bottomNavigation = [
         name: 'Hỗ trợ khách hàng',
         href: '/dashboard/support-chat',
         icon: MessageSquare,
-        roles: ['ADMIN', 'MANAGER', 'WAITER', 'CASHIER'],
+        roles: ['ADMIN', 'WAITER', 'CASHIER'],
     },
 ];
 export function Sidebar() {

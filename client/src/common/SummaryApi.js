@@ -412,6 +412,16 @@ const SummaryApi = {
     voucher_analytics_trend: {
         url: '/api/voucher/analytics/usage-trend',
         method: 'get'
+    },
+
+    // Cashier payment APIs
+    get_cashier_pending_orders: {
+        url: '/api/table-order/cashier-pending',
+        method: 'get'
+    },
+    cashier_confirm_payment: {
+        url: '/api/table-order/cashier-confirm',
+        method: 'post'
     }
 }
 

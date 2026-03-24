@@ -36,7 +36,7 @@ function App() {
         '/verify-email',
     ].some((path) => location.pathname.startsWith(path));
 
-    // Layouts riêng: admin dashboard, table flow, kitchen, waiter
+    // Layouts riêng: admin dashboard, table flow, kitchen
     const dashBoardLayout = [
         '/admin',
         '/dashboard',
@@ -45,6 +45,8 @@ function App() {
         '/table-payment-success',
         '/kitchen',
         '/waiter-board',
+        '/chef-board',
+        '/cashier-board',
         '/customer-checkin',
     ].some((path) => location.pathname.startsWith(path));
 
