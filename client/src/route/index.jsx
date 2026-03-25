@@ -42,6 +42,7 @@ import WaiterBoardPage from '../pages/WaiterBoardPage';
 import DashboardRouter from '../pages/DashboardRouter';
 import ChefDashboard from '@/pages/ChefDashboard';
 import CashierDashboard from '@/pages/CashierDashboard';
+import SupportChatCustomer from '@/pages/SupportChatCustomer';
 
 const router = createBrowserRouter([
     {
@@ -181,6 +182,10 @@ const router = createBrowserRouter([
                 children: [
                     { index: true, element: <DashboardRouter /> },
                     { path: 'profile', element: <Profile /> },
+                    {
+                        path: 'chat-support-customer',
+                        element: <SupportChatCustomer />,
+                    },
                     {
                         path: 'category',
                         element: (

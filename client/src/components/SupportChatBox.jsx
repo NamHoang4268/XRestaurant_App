@@ -9,7 +9,9 @@ import {
     Headphones,
     Wifi,
     WifiOff,
+    Maximize,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 // Dùng prefix để phân biệt guest session và user session
 const GUEST_STORAGE_KEY = 'tc_support_conv_guest';
@@ -405,6 +407,13 @@ export default function SupportChatBox() {
                             </div>
                         </div>
                         <div className="flex items-center gap-1">
+                            <Link
+                                to={'/dashboard/chat-support-customer'}
+                                className="w-7 h-7 rounded-full hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition cursor-pointer"
+                                title="Mở rộng"
+                            >
+                                <Maximize size={16} />
+                            </Link>
                             <button
                                 onClick={() => setIsMinimized(true)}
                                 className="w-7 h-7 rounded-full hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition cursor-pointer"

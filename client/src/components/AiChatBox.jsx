@@ -2,7 +2,15 @@ import { useState, useRef, useEffect } from 'react';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
 import AxiosToastError from '../utils/AxiosToastError';
-import { Bot, X, Send, Minimize2, Sparkles, ChevronDown } from 'lucide-react';
+import {
+    Bot,
+    X,
+    Send,
+    Minimize2,
+    Sparkles,
+    ChevronDown,
+    Maximize,
+} from 'lucide-react';
 
 // Quick suggestion buttons
 const QUICK_SUGGESTIONS = [
@@ -222,6 +230,13 @@ export default function AiChatBox() {
                             </div>
                         </div>
                         <div className="flex items-center gap-1">
+                            <Link
+                                to={'/dashboard/chat-support-customer'}
+                                className="w-7 h-7 rounded-full hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition cursor-pointer"
+                                title="Mở rộng"
+                            >
+                                <Maximize size={16} />
+                            </Link>
                             <button
                                 onClick={handleMinimize}
                                 className="w-7 h-7 rounded-full hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition cursor-pointer"
