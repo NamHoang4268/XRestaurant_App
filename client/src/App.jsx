@@ -16,9 +16,8 @@ import GlobalProvider from './provider/GlobalProvider';
 import AxiosToastError from './utils/AxiosToastError';
 import Header from './components/home/Header';
 import LiquidEther from './components/LiquidEther';
-import AiChatBox from './components/AiChatBox';
-import SupportChatBox from './components/SupportChatBox';
 import { SupportChatProvider } from './contexts/SupportChatContext';
+import FloatingChatLauncher from './components/FloatingChatLauncher';
 import LightPillarClient from '@/components/animations/LightPillarClient';
 import Plasma from './components/animations/Plasma';
 
@@ -156,9 +155,8 @@ function App() {
 
                 <Toaster />
 
-                {/* AI Chatbox & Support Chat — chỉ hiện trên trang khách hàng */}
-                {!hideLayout && !dashBoardLayout && <AiChatBox />}
-                {!hideLayout && !dashBoardLayout && <SupportChatBox />}
+                {/* Floating Chat Launcher — AI + Support, chỉ hiện trên trang khách hàng */}
+                {!hideLayout && !dashBoardLayout && <FloatingChatLauncher />}
             </SupportChatProvider>
         </GlobalProvider>
     );

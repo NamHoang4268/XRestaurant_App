@@ -14,8 +14,23 @@
     }
 }
 
+@keyframes slide-up {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
 .animate-gradient {
     animation: gradient 8s linear infinite;
+}
+
+.animate-slide-up {
+    animation: slide-up 0.3s ease-out;
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -81,6 +96,10 @@
         --card: 40 35% 98%; /* Very light cream for cards */
         --card-foreground: 30 20% 20%;
 
+        /* RGB values for glassmorphism */
+        --card-rgb: 252, 250, 248;
+        --border-rgb: 210, 180, 140;
+
         /* Popover */
         --popover: 40 35% 98%;
         --popover-foreground: 30 20% 20%;
@@ -137,6 +156,10 @@
         /* Card colors - darker warm tones */
         --card: 30 15% 7%; /* Very dark brown card */
         --card-foreground: 40 15% 88%;
+
+        /* RGB values for glassmorphism */
+        --card-rgb: 20, 18, 16;
+        --border-rgb: 60, 55, 50;
 
         /* Popover */
         --popover: 30 15% 7%;

@@ -13,28 +13,32 @@ import {
     FiList,
     FiTrash2,
     FiSend,
+    FiChevronDown,
+    FiGrid,
 } from 'react-icons/fi';
 import { MdOutlineKitchen } from 'react-icons/md';
+import ShinyText from '../components/animations/ShinyText';
+import BorderGlow from '../components/animations/BorderGlow';
 
 const SOCKET_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:8080';
 
-// Kitchen status badge config
+// Kitchen status badge config (theme-aware)
 const KITCHEN_STATUS = {
     pending: {
         label: 'Chờ bếp',
-        color: 'bg-yellow-100 text-yellow-700 border border-yellow-300',
+        color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-300 dark:border-yellow-700',
     },
     cooking: {
         label: 'Đang nấu',
-        color: 'bg-blue-100 text-blue-700 border border-blue-300',
+        color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-300 dark:border-blue-700',
     },
     ready: {
         label: 'Sẵn sàng',
-        color: 'bg-green-100 text-green-700 border border-green-300',
+        color: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-700',
     },
     served: {
         label: 'Đã phục vụ',
-        color: 'bg-gray-100 text-gray-500 border border-gray-300',
+        color: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600',
     },
 };
 
@@ -52,6 +56,7 @@ const TableMenuPage = () => {
     const [loading, setLoading] = useState(true);
     const [showCart, setShowCart] = useState(false);
     const [showCurrentOrder, setShowCurrentOrder] = useState(false);
+    const [showCategoryMenu, setShowCategoryMenu] = useState(false);
     const [tableInfo, setTableInfo] = useState(null);
     const [currentOrder, setCurrentOrder] = useState(null);
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -332,38 +337,43 @@ const TableMenuPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="animate-spin rounded-full h-16 w-16 md:h-12 md:w-12 border-b-2 border-[#C96048]"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-background">
             {/* Header */}
-            <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 sticky top-0 z-40 shadow-lg">
+            <div
+                className="text-white p-5 md:p-4 sticky top-0 z-40 shadow-lg"
+                style={{
+                    background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                }}
+            >
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     <div>
-                        <h1 className="text-2xl font-bold">
+                        <h1 className="text-2xl md:text-xl font-bold font-[Bahnschrift,_system-ui]">
                             {tableInfo?.tableNumber || 'Bàn'}
                         </h1>
-                        <p className="text-sm opacity-90">
+                        <p className="text-base md:text-sm opacity-90">
                             {tableInfo?.tableLocation || 'Nhà hàng EatEase'}
                         </p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 md:gap-2">
                         {/* Current Order button (US18) */}
                         <button
                             onClick={() => {
                                 fetchCurrentOrder();
                                 setShowCurrentOrder(true);
                             }}
-                            className="relative bg-white text-blue-500 p-3 rounded-full hover:bg-blue-50 transition-colors"
+                            className="relative bg-white dark:bg-gray-800 text-blue-500 dark:text-blue-400 p-4 md:p-3 rounded-full hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors active:scale-95"
                             title="Xem đơn gọi món"
                         >
-                            <FiList size={22} />
+                            <FiList size={24} className="md:text-[22px]" />
                             {activeItemsCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-6 h-6 md:w-5 md:h-5 flex items-center justify-center font-bold">
                                     {activeItemsCount}
                                 </span>
                             )}
@@ -371,49 +381,175 @@ const TableMenuPage = () => {
                         {/* Local cart button */}
                         <button
                             onClick={() => setShowCart(true)}
-                            className="relative bg-white text-orange-500 p-3 rounded-full hover:bg-orange-50 transition-colors"
+                            className="relative bg-white dark:bg-gray-800 p-4 md:p-3 rounded-full hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors active:scale-95"
+                            style={{ color: '#C96048' }}
                             title="Món đang chọn"
                         >
-                            <FiShoppingCart size={22} />
+                            <FiShoppingCart size={24} className="md:text-[22px]" />
                             {localOrder.length > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-6 h-6 md:w-5 md:h-5 flex items-center justify-center font-bold">
                                     {localOrder.length}
                                 </span>
                             )}
                         </button>
                         <button
                             onClick={handleLogout}
-                            className="bg-white text-orange-500 p-3 rounded-full hover:bg-orange-50 transition-colors"
+                            className="bg-white dark:bg-gray-800 p-4 md:p-3 rounded-full hover:bg-orange-50 dark:hover:bg-gray-700 transition-colors active:scale-95"
+                            style={{ color: '#C96048' }}
                             title="Đăng xuất"
                         >
-                            <FiLogOut size={22} />
+                            <FiLogOut size={24} className="md:text-[22px]" />
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Categories */}
-            <div className="bg-white shadow-sm sticky top-[72px] z-30">
-                <div className="max-w-7xl mx-auto overflow-x-auto">
-                    <div className="flex gap-2 p-4">
-                        {categories.map((category) => (
-                            <button
-                                key={category._id}
-                                onClick={() =>
-                                    setSelectedCategory(category._id)
-                                }
-                                className={`px-6 py-2 rounded-full font-semibold whitespace-nowrap transition-all ${
-                                    selectedCategory === category._id
-                                        ? 'bg-orange-500 text-white shadow-md'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
-                            >
-                                {category.name}
-                            </button>
-                        ))}
+            {/* Categories - Mobile: Dropdown, Desktop: Horizontal scroll */}
+            <div className="bg-card border-b border-border shadow-sm sticky top-[80px] md:top-[72px] z-30">
+                <div className="max-w-7xl mx-auto">
+                    {/* Mobile: Category dropdown button */}
+                    <div className="md:hidden p-4">
+                        <button
+                            onClick={() => setShowCategoryMenu(true)}
+                            className="group relative w-full flex items-center justify-between px-5 py-3 rounded-xl font-semibold text-white shadow-md transition-all duration-300 hover:shadow-lg active:scale-95 overflow-hidden"
+                            style={{
+                                background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                            }}
+                        >
+                            {/* Subtle shine effect */}
+                            <div
+                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                                style={{
+                                    background: 'linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
+                                }}
+                            />
+                            <div className="relative z-10 flex items-center gap-2">
+                                <FiGrid size={20} />
+                                <span>
+                                    {categories.find((c) => c._id === selectedCategory)?.name || 'Chọn danh mục'}
+                                </span>
+                            </div>
+                            <FiChevronDown size={20} className="relative z-10" />
+                        </button>
+                    </div>
+
+                    {/* Desktop: Horizontal scroll */}
+                    <div className="hidden md:block overflow-x-auto">
+                        <div className="flex gap-2 p-3">
+                            {categories.map((category) => (
+                                <button
+                                    key={category._id}
+                                    onClick={() =>
+                                        setSelectedCategory(category._id)
+                                    }
+                                    className={`group relative px-6 py-2 rounded-full font-semibold whitespace-nowrap transition-all duration-300 active:scale-95 overflow-hidden ${
+                                        selectedCategory === category._id
+                                            ? 'text-white shadow-md'
+                                            : 'text-gray-700 dark:text-gray-300 hover:scale-105'
+                                    }`}
+                                    style={
+                                        selectedCategory === category._id
+                                            ? { 
+                                                background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                                                boxShadow: '0 4px 12px rgba(201, 96, 72, 0.3)',
+                                            }
+                                            : {
+                                                background: 'rgba(var(--card-rgb, 255, 255, 255), 0.6)',
+                                                backdropFilter: 'blur(8px)',
+                                                border: '1px solid rgba(var(--border-rgb, 200, 200, 200), 0.3)',
+                                            }
+                                    }
+                                >
+                                    {/* Hover glow for non-selected */}
+                                    {selectedCategory !== category._id && (
+                                        <div
+                                            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                                            style={{
+                                                background: 'radial-gradient(circle at center, rgba(201, 96, 72, 0.1) 0%, transparent 70%)',
+                                            }}
+                                        />
+                                    )}
+                                    <span className="relative z-10">{category.name}</span>
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
+
+            {/* Mobile Category Menu - Bottom Sheet */}
+            {showCategoryMenu && (
+                <div
+                    className="md:hidden fixed inset-0 bg-black/50 z-50 flex items-end backdrop-blur-sm"
+                    onClick={() => setShowCategoryMenu(false)}
+                >
+                    <div
+                        className="w-full rounded-t-3xl shadow-2xl max-h-[70vh] flex flex-col animate-slide-up overflow-hidden"
+                        style={{
+                            background: 'rgba(var(--card-rgb, 255, 255, 255), 0.95)',
+                            backdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(var(--border-rgb, 200, 200, 200), 0.3)',
+                            borderBottom: 'none',
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Handle bar */}
+                        <div className="flex justify-center pt-3 pb-2">
+                            <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                        </div>
+
+                        {/* Header */}
+                        <div className="px-5 py-3 border-b border-border/50">
+                            <h3 className="text-xl font-bold text-foreground font-[Bahnschrift,_system-ui]">
+                                Chọn danh mục
+                            </h3>
+                        </div>
+
+                        {/* Category list */}
+                        <div className="flex-1 overflow-y-auto p-4">
+                            <div className="grid grid-cols-2 gap-3">
+                                {categories.map((category) => (
+                                    <button
+                                        key={category._id}
+                                        onClick={() => {
+                                            setSelectedCategory(category._id);
+                                            setShowCategoryMenu(false);
+                                        }}
+                                        className={`group relative p-4 rounded-xl font-semibold text-center transition-all duration-300 overflow-hidden ${
+                                            selectedCategory === category._id
+                                                ? 'text-white shadow-lg scale-105'
+                                                : 'text-gray-700 dark:text-gray-300 hover:scale-105 active:scale-95'
+                                        }`}
+                                        style={
+                                            selectedCategory === category._id
+                                                ? { 
+                                                    background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                                                    boxShadow: '0 8px 20px rgba(201, 96, 72, 0.3)',
+                                                }
+                                                : {
+                                                    background: 'rgba(var(--card-rgb, 255, 255, 255), 0.5)',
+                                                    backdropFilter: 'blur(8px)',
+                                                    border: '1px solid rgba(var(--border-rgb, 200, 200, 200), 0.3)',
+                                                }
+                                        }
+                                    >
+                                        {/* Hover glow for non-selected */}
+                                        {selectedCategory !== category._id && (
+                                            <div
+                                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                                                style={{
+                                                    background: 'radial-gradient(circle at center, rgba(201, 96, 72, 0.1) 0%, transparent 70%)',
+                                                }}
+                                            />
+                                        )}
+                                        <span className="relative z-10">{category.name}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Products Grid */}
             <div className="max-w-7xl mx-auto p-4">
@@ -424,14 +560,29 @@ const TableMenuPage = () => {
                         return (
                             <div
                                 key={product._id}
-                                className={`bg-white rounded-xl shadow-sm overflow-hidden transition-shadow ${
+                                className={`group relative rounded-xl shadow-sm overflow-hidden transition-all duration-300 ${
                                     isAvailable
-                                        ? 'hover:shadow-md'
+                                        ? 'hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]'
                                         : 'opacity-70'
                                 }`}
+                                style={{
+                                    background: 'rgba(var(--card-rgb, 255, 255, 255), 0.7)',
+                                    backdropFilter: 'blur(12px)',
+                                    border: '1px solid rgba(var(--border-rgb, 200, 200, 200), 0.3)',
+                                }}
                             >
+                                {/* Hover glow effect */}
+                                {isAvailable && (
+                                    <div
+                                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10"
+                                        style={{
+                                            background: 'radial-gradient(circle at 50% 0%, rgba(201, 96, 72, 0.15) 0%, transparent 60%)',
+                                        }}
+                                    />
+                                )}
+
                                 {/* AC 7.2 – unavailable overlay */}
-                                <div className="relative aspect-square bg-gray-100">
+                                <div className="relative aspect-square bg-gray-100 dark:bg-gray-800">
                                     {product.image?.[0] && (
                                         <img
                                             src={product.image[0]}
@@ -440,18 +591,18 @@ const TableMenuPage = () => {
                                         />
                                     )}
                                     {!isAvailable && (
-                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                            <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-sm">
+                                            <span className="bg-red-500 text-white text-sm md:text-xs font-bold px-4 py-2 md:px-3 md:py-1 rounded-full shadow-lg">
                                                 Hết hàng
                                             </span>
                                         </div>
                                     )}
                                 </div>
-                                <div className="p-3">
-                                    <h3 className="font-semibold text-gray-800 mb-1 line-clamp-2">
+                                <div className="relative z-10 p-4 md:p-3">
+                                    <h3 className="font-semibold text-foreground text-base md:text-sm mb-1 line-clamp-2">
                                         {product.name}
                                     </h3>
-                                    <p className="text-orange-500 font-bold text-lg mb-2">
+                                    <p className="font-bold text-xl md:text-lg mb-3 md:mb-2" style={{ color: '#C96048' }}>
                                         {product.price?.toLocaleString('vi-VN')}
                                         đ
                                     </p>
@@ -460,11 +611,21 @@ const TableMenuPage = () => {
                                             handleAddToLocalOrder(product)
                                         }
                                         disabled={!isAvailable}
-                                        className={`w-full font-semibold py-2 rounded-lg transition-colors text-white ${
+                                        className={`w-full font-semibold py-3 md:py-2 rounded-lg transition-all text-white ${
                                             isAvailable
-                                                ? 'bg-orange-500 hover:bg-orange-600'
-                                                : 'bg-gray-300 cursor-not-allowed'
+                                                ? 'hover:shadow-lg active:scale-95'
+                                                : 'cursor-not-allowed'
                                         }`}
+                                        style={
+                                            isAvailable
+                                                ? { 
+                                                    background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                                                    boxShadow: '0 4px 12px rgba(201, 96, 72, 0.3)',
+                                                }
+                                                : {
+                                                    background: 'rgba(var(--border-rgb, 200, 200, 200), 0.3)',
+                                                }
+                                        }
                                     >
                                         {isAvailable ? '+ Thêm' : 'Hết hàng'}
                                     </button>
@@ -484,17 +645,29 @@ const TableMenuPage = () => {
                     onClick={() => setShowCart(false)}
                 >
                     <div
-                        className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl flex flex-col"
+                        className="absolute right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-xl flex flex-col"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
-                        <div className="bg-orange-500 text-white p-4 flex justify-between items-center">
-                            <h2 className="text-xl font-bold">
-                                Món đã chọn ({localOrder.length})
+                        <div
+                            className="text-white p-5 md:p-4 flex justify-between items-center"
+                            style={{
+                                background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                            }}
+                        >
+                            <h2 className="text-2xl md:text-xl font-bold font-[Bahnschrift,_system-ui]">
+                                <ShinyText
+                                    text={`Món đã chọn (${localOrder.length})`}
+                                    disabled={false}
+                                    speed={3}
+                                    color="#ffffff"
+                                    shineColor="#ffe4d6"
+                                    spread={90}
+                                />
                             </h2>
                             <button
                                 onClick={() => setShowCart(false)}
-                                className="text-2xl leading-none"
+                                className="text-3xl md:text-2xl leading-none hover:opacity-80 active:scale-95"
                             >
                                 &times;
                             </button>
@@ -503,7 +676,7 @@ const TableMenuPage = () => {
                         {/* Items */}
                         <div className="flex-1 overflow-y-auto p-4">
                             {localOrder.length === 0 ? (
-                                <p className="text-center text-gray-500 mt-8">
+                                <p className="text-center text-muted-foreground mt-8">
                                     Chưa chọn món nào
                                 </p>
                             ) : (
@@ -511,20 +684,34 @@ const TableMenuPage = () => {
                                     {localOrder.map((item) => (
                                         <div
                                             key={item.productId}
-                                            className="flex gap-3 bg-gray-50 p-3 rounded-lg"
+                                            className="group relative flex gap-3 p-4 md:p-3 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                                            style={{
+                                                background: 'rgba(var(--card-rgb, 255, 255, 255), 0.05)',
+                                                backdropFilter: 'blur(12px)',
+                                                border: '1px solid rgba(var(--border-rgb, 200, 200, 200), 0.2)',
+                                                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                                            }}
                                         >
+                                            {/* Hover glow effect */}
+                                            <div
+                                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                                                style={{
+                                                    background: 'radial-gradient(circle at center, rgba(201, 96, 72, 0.1) 0%, transparent 70%)',
+                                                }}
+                                            />
+
                                             {item.image && (
                                                 <img
                                                     src={item.image}
                                                     alt={item.name}
-                                                    className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                                                    className="relative z-10 w-20 h-20 md:w-16 md:h-16 object-cover rounded-lg flex-shrink-0 shadow-md"
                                                 />
                                             )}
-                                            <div className="flex-1">
-                                                <h3 className="font-semibold text-gray-800">
+                                            <div className="relative z-10 flex-1">
+                                                <h3 className="font-semibold text-foreground text-base md:text-sm">
                                                     {item.name}
                                                 </h3>
-                                                <p className="text-orange-500 font-bold">
+                                                <p className="font-bold text-lg md:text-base" style={{ color: '#C96048' }}>
                                                     {item.price?.toLocaleString(
                                                         'vi-VN'
                                                     )}
@@ -539,9 +726,9 @@ const TableMenuPage = () => {
                                                                 -1
                                                             )
                                                         }
-                                                        className="bg-gray-200 text-gray-700 p-1 rounded"
+                                                        className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 p-2 md:p-1 rounded active:scale-95 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                                                     >
-                                                        <FiMinus />
+                                                        <FiMinus size={18} className="md:text-base" />
                                                     </button>
                                                     <input
                                                         type="number"
@@ -560,7 +747,8 @@ const TableMenuPage = () => {
                                                         onBlur={() =>
                                                             handleLocalQtyInputBlur(item.productId)
                                                         }
-                                                        className="w-12 text-center border border-gray-300 rounded text-sm font-semibold text-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-400 py-0.5"
+                                                        className="w-14 md:w-12 text-center border border-border bg-background rounded text-base md:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#C96048]/50 py-1.5 md:py-0.5"
+                                                        style={{ color: '#C96048' }}
                                                     />
                                                     <button
                                                         onClick={() =>
@@ -569,9 +757,9 @@ const TableMenuPage = () => {
                                                                 1
                                                             )
                                                         }
-                                                        className="bg-gray-200 text-gray-700 p-1 rounded"
+                                                        className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 p-2 md:p-1 rounded active:scale-95 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                                                     >
-                                                        <FiPlus />
+                                                        <FiPlus size={18} className="md:text-base" />
                                                     </button>
                                                     <button
                                                         onClick={() =>
@@ -579,9 +767,9 @@ const TableMenuPage = () => {
                                                                 item.productId
                                                             )
                                                         }
-                                                        className="ml-auto text-red-500"
+                                                        className="ml-auto text-red-500 dark:text-red-400 p-2 md:p-1 active:scale-95 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                                                     >
-                                                        <FiTrash2 />
+                                                        <FiTrash2 size={18} className="md:text-base" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -593,23 +781,36 @@ const TableMenuPage = () => {
 
                         {/* Footer */}
                         {localOrder.length > 0 && (
-                            <div className="border-t p-4 space-y-3">
-                                <div className="flex justify-between items-center text-lg font-bold">
-                                    <span className="text-gray-700">Tổng:</span>
-                                    <span className="text-orange-500">
+                            <div className="border-t border-border p-4 space-y-3 bg-card">
+                                <div className="flex justify-between items-center text-xl md:text-lg font-bold">
+                                    <span className="text-foreground">Tổng:</span>
+                                    <span style={{ color: '#C96048' }}>
                                         {totalAmount.toLocaleString('vi-VN')}đ
                                     </span>
                                 </div>
-                                <button
-                                    onClick={handlePlaceOrder}
-                                    disabled={isSubmitting}
-                                    className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-bold py-3 rounded-lg transition-colors"
+                                <BorderGlow
+                                    className="w-full"
+                                    glowColor="201 96 72"
+                                    backgroundColor="transparent"
+                                    borderRadius={12}
+                                    animated={true}
+                                    colors={['#C96048', '#d97a66', '#e8a896']}
+                                    glowIntensity={0.8}
                                 >
-                                    <FiSend />
-                                    {isSubmitting
-                                        ? 'Đang gửi...'
-                                        : 'Gọi món ngay 🍽️'}
-                                </button>
+                                    <button
+                                        onClick={handlePlaceOrder}
+                                        disabled={isSubmitting}
+                                        className="w-full flex items-center justify-center gap-2 disabled:opacity-60 text-white font-bold py-4 md:py-3 rounded-xl transition-all active:scale-95"
+                                        style={{
+                                            background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                                        }}
+                                    >
+                                        <FiSend size={20} className="md:text-lg" />
+                                        {isSubmitting
+                                            ? 'Đang gửi...'
+                                            : 'Gọi món ngay 🍽️'}
+                                    </button>
+                                </BorderGlow>
                             </div>
                         )}
                     </div>
@@ -625,27 +826,34 @@ const TableMenuPage = () => {
                     onClick={() => setShowCurrentOrder(false)}
                 >
                     <div
-                        className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl flex flex-col"
+                        className="absolute right-0 top-0 h-full w-full max-w-md bg-card border-l border-border shadow-xl flex flex-col"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
-                        <div className="bg-blue-600 text-white p-4">
+                        <div className="bg-blue-600 dark:bg-blue-700 text-white p-5 md:p-4">
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center gap-2">
-                                    <MdOutlineKitchen size={22} />
-                                    <h2 className="text-xl font-bold">
-                                        Đơn gọi món
+                                    <MdOutlineKitchen size={24} className="md:text-[22px]" />
+                                    <h2 className="text-2xl md:text-xl font-bold font-[Bahnschrift,_system-ui]">
+                                        <ShinyText
+                                            text="Đơn gọi món"
+                                            disabled={false}
+                                            speed={3}
+                                            color="#ffffff"
+                                            shineColor="#dbeafe"
+                                            spread={90}
+                                        />
                                     </h2>
                                 </div>
                                 <button
                                     onClick={() => setShowCurrentOrder(false)}
-                                    className="text-2xl leading-none"
+                                    className="text-3xl md:text-2xl leading-none hover:opacity-80 active:scale-95"
                                 >
                                     &times;
                                 </button>
                             </div>
                             {currentOrder && (
-                                <p className="text-sm opacity-80 mt-1">
+                                <p className="text-base md:text-sm opacity-80 mt-1">
                                     Bàn: {currentOrder.tableNumber} &bull;{' '}
                                     {currentOrder.items?.length || 0} món
                                 </p>
@@ -655,7 +863,7 @@ const TableMenuPage = () => {
                         {/* Items US18 – hiển thị kitchenStatus */}
                         <div className="flex-1 overflow-y-auto p-4">
                             {!currentOrder?.items?.length ? (
-                                <div className="text-center text-gray-500 mt-12">
+                                <div className="text-center text-muted-foreground mt-12">
                                     <FiList
                                         size={48}
                                         className="mx-auto mb-4 opacity-30"
@@ -675,10 +883,24 @@ const TableMenuPage = () => {
                                         return (
                                             <div
                                                 key={index}
-                                                className="bg-gray-50 rounded-xl p-3 flex items-center gap-3"
+                                                className="group relative flex items-center gap-3 p-4 md:p-3 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.02]"
+                                                style={{
+                                                    background: 'rgba(var(--card-rgb, 255, 255, 255), 0.05)',
+                                                    backdropFilter: 'blur(12px)',
+                                                    border: '1px solid rgba(var(--border-rgb, 200, 200, 200), 0.2)',
+                                                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
+                                                }}
                                             >
+                                                {/* Hover glow effect */}
+                                                <div
+                                                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                                                    style={{
+                                                        background: 'radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%)',
+                                                    }}
+                                                />
+
                                                 {/* Image */}
-                                                <div className="w-14 h-14 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                                                <div className="relative z-10 w-16 h-16 md:w-14 md:h-14 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0 shadow-md">
                                                     {item.productId
                                                         ?.image?.[0] && (
                                                         <img
@@ -695,13 +917,13 @@ const TableMenuPage = () => {
                                                     )}
                                                 </div>
                                                 {/* Info */}
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-semibold text-gray-800 truncate">
+                                                <div className="relative z-10 flex-1 min-w-0">
+                                                    <p className="font-semibold text-foreground text-base md:text-sm truncate">
                                                         {item.productId?.name ||
                                                             item.name ||
                                                             'Món ăn'}
                                                     </p>
-                                                    <p className="text-sm text-gray-500">
+                                                    <p className="text-sm text-muted-foreground">
                                                         x{item.quantity} &bull;{' '}
                                                         {(
                                                             (item.price || 0) *
@@ -712,14 +934,14 @@ const TableMenuPage = () => {
                                                         đ
                                                     </p>
                                                     {item.note && (
-                                                        <p className="text-xs text-yellow-600 mt-0.5">
+                                                        <p className="text-xs text-yellow-600 dark:text-yellow-500 mt-0.5">
                                                             📝 {item.note}
                                                         </p>
                                                     )}
                                                 </div>
                                                 {/* Kitchen status badge */}
                                                 <span
-                                                    className={`text-xs px-2 py-1 rounded-full font-medium whitespace-nowrap ${statusCfg.color}`}
+                                                    className={`relative z-10 text-xs px-2 py-1 rounded-full font-medium whitespace-nowrap ${statusCfg.color}`}
                                                 >
                                                     {statusCfg.label}
                                                 </span>
@@ -732,8 +954,8 @@ const TableMenuPage = () => {
 
                         {/* Footer – Tổng + Thanh toán */}
                         {currentOrder?.items?.length > 0 && (
-                            <div className="border-t p-4 space-y-3">
-                                <div className="flex justify-between text-sm text-gray-600">
+                            <div className="border-t border-border p-4 space-y-3 bg-card">
+                                <div className="flex justify-between text-sm text-muted-foreground">
                                     <span>Tổng số lượng:</span>
                                     <span className="font-semibold">
                                         {currentOrder.items.reduce(
@@ -742,11 +964,11 @@ const TableMenuPage = () => {
                                         )}
                                     </span>
                                 </div>
-                                <div className="flex justify-between text-lg font-bold">
-                                    <span className="text-blue-800">
+                                <div className="flex justify-between text-xl md:text-lg font-bold">
+                                    <span className="text-blue-800 dark:text-blue-400">
                                         Tổng cộng:
                                     </span>
-                                    <span className="text-blue-600">
+                                    <span className="text-blue-600 dark:text-blue-400">
                                         {currentOrder.total?.toLocaleString(
                                             'vi-VN'
                                         )}
@@ -758,11 +980,11 @@ const TableMenuPage = () => {
                                         setShowCurrentOrder(false);
                                         navigate('/table-order-management');
                                     }}
-                                    className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg font-semibold text-lg hover:from-green-600 hover:to-green-700 transition-all shadow-md"
+                                    className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 md:py-3 rounded-lg font-semibold text-lg hover:from-green-600 hover:to-green-700 transition-all shadow-md active:scale-95"
                                 >
                                     💳 Thanh toán
                                 </button>
-                                <div className="flex items-center gap-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-lg p-2">
+                                <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-2">
                                     <span>ℹ️</span>
                                     <span>
                                         Bạn có thể tiếp tục gọi thêm món. Thanh

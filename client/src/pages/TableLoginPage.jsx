@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTheme } from 'next-themes';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
 import toast from 'react-hot-toast';
@@ -7,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { setUserDetails } from '../store/userSlice';
 
 const TableLoginPage = () => {
+    const { theme } = useTheme();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -82,11 +84,18 @@ const TableLoginPage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+            <div className="min-h-screen flex items-center justify-center bg-background dark:bg-gray-950 px-4">
                 <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-lg text-gray-700">Đang xác thực mã QR...</p>
-                    <p className="text-sm text-gray-400 mt-1">Vui lòng chờ trong giây lát</p>
+                    <div
+                        className="w-20 h-20 md:w-16 md:h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-6"
+                        style={{
+                            borderColor: theme === 'dark' ? 'rgba(201,96,72,0.3)' : 'rgba(201,96,72,0.2)',
+                            borderTopColor: 'transparent',
+                            borderRightColor: '#C96048',
+                        }}
+                    />
+                    <p className="text-xl md:text-lg text-foreground font-semibold">Đang xác thực mã QR...</p>
+                    <p className="text-base md:text-sm text-muted-foreground mt-2">Vui lòng chờ trong giây lát</p>
                 </div>
             </div>
         );
@@ -94,11 +103,18 @@ const TableLoginPage = () => {
 
     if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 p-4">
-                <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
-                    <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="min-h-screen flex items-center justify-center bg-background dark:bg-gray-950 p-4">
+                <div className="bg-card dark:bg-gray-900 rounded-3xl shadow-xl p-8 md:p-6 max-w-md w-full text-center border border-border">
+                    <div
+                        className="w-24 h-24 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+                        style={{
+                            background: theme === 'dark'
+                                ? 'rgba(239,68,68,0.15)'
+                                : 'rgba(254,226,226,1)',
+                        }}
+                    >
                         <svg
-                            className="w-10 h-10 text-red-500"
+                            className="w-12 h-12 md:w-10 md:h-10 text-red-500"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -111,13 +127,22 @@ const TableLoginPage = () => {
                             />
                         </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                    <h2 className="text-2xl md:text-xl font-bold text-foreground mb-3">
                         Mã QR không hợp lệ
                     </h2>
-                    <p className="text-gray-500 mb-6">{error}</p>
+                    <p className="text-base md:text-sm text-muted-foreground mb-8 leading-relaxed">{error}</p>
                     <button
                         onClick={() => navigate('/')}
-                        className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                        className="w-full text-white font-semibold text-lg md:text-base py-4 md:py-3 px-6 rounded-xl transition-all shadow-lg active:scale-95"
+                        style={{
+                            background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.opacity = '0.9';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.opacity = '1';
+                        }}
                     >
                         Về trang chủ
                     </button>

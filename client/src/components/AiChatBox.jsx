@@ -1,19 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTheme } from 'next-themes';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
-import AxiosToastError from '../utils/AxiosToastError';
-import {
-    Bot,
-    X,
-    Send,
-    Minimize2,
-    Sparkles,
-    ChevronDown,
-    Maximize,
-} from 'lucide-react';
+import { Bot, X, Send, Sparkles, ChevronDown, Maximize } from 'lucide-react';
 
-// Quick suggestion buttons
+/* ── Design tokens — khớp home page ──────────────────────────────
+ * Brand rose-orange : #C96048  (AI giữ violet/indigo để phân biệt)
+ * Glassmorphism     : backdrop-blur + border/white semi-transparent
+ * CSS vars          : bg-background, bg-card, border-border, text-foreground
+ * ───────────────────────────────────────────────────────────────── */
+
 const QUICK_SUGGESTIONS = [
     'Món đặc biệt của nhà hàng?',
     'Có món nào cay không?',
@@ -24,21 +21,23 @@ const QUICK_SUGGESTIONS = [
 function ChatBubble({ role, text }) {
     const isUser = role === 'user';
     return (
-        <div
-            className={`flex gap-2 ${isUser ? 'flex-row-reverse' : 'flex-row'} items-end mb-3`}
-        >
+        <div className={`flex gap-2 ${isUser ? 'flex-row-reverse' : 'flex-row'} items-end mb-2.5`}>
             {!isUser && (
-                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow">
-                    <Bot size={14} className="text-white" />
+                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md">
+                    <Bot size={13} className="text-white" />
                 </div>
             )}
             <div
-                className={`max-w-[78%] px-3 py-2 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                className={`max-w-[78%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed ${
                     isUser
-                        ? 'bg-gradient-to-br from-violet-500 to-indigo-600 text-white rounded-br-sm'
-                        : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-sm border border-gray-100 dark:border-gray-700'
+                        ? 'text-white rounded-br-sm shadow-md shadow-violet-500/25'
+                        : 'bg-card dark:bg-gray-800 text-foreground rounded-bl-sm border border-border shadow-sm'
                 }`}
-                style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                style={{
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    background: isUser ? 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)' : undefined,
+                }}
             >
                 {text}
             </div>
@@ -48,61 +47,52 @@ function ChatBubble({ role, text }) {
 
 function TypingIndicator() {
     return (
-        <div className="flex gap-2 items-end mb-3">
-            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow">
-                <Bot size={14} className="text-white" />
+        <div className="flex gap-2 items-end mb-2.5">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md">
+                <Bot size={13} className="text-white" />
             </div>
-            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 px-4 py-3 rounded-2xl rounded-bl-sm shadow-sm">
+            <div className="px-4 py-3 rounded-2xl rounded-bl-sm shadow-sm bg-card dark:bg-gray-800 border border-border">
                 <div className="flex gap-1 items-center">
-                    <span
-                        className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce"
-                        style={{ animationDelay: '0ms' }}
-                    />
-                    <span
-                        className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce"
-                        style={{ animationDelay: '150ms' }}
-                    />
-                    <span
-                        className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce"
-                        style={{ animationDelay: '300ms' }}
-                    />
+                    {[0, 150, 300].map((d) => (
+                        <span
+                            key={d}
+                            className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce"
+                            style={{ animationDelay: `${d}ms` }}
+                        />
+                    ))}
                 </div>
             </div>
         </div>
     );
 }
 
-export default function AiChatBox() {
-    const [isOpen, setIsOpen] = useState(false);
+/**
+ * AiChatBox — controlled mode
+ *   isOpen  {boolean}  — do FloatingChatLauncher điều khiển
+ *   onClose {function} — callback khi người dùng đóng
+ */
+export default function AiChatBox({ isOpen = false, onClose }) {
+    const { theme } = useTheme();
     const [isMinimized, setIsMinimized] = useState(false);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
-    const [cooldown, setCooldown] = useState(0); // giây còn lại
-    const [hasNewMessage, setHasNewMessage] = useState(false);
+    const [cooldown, setCooldown] = useState(0);
     const [messages, setMessages] = useState([
         {
             role: 'bot',
-            text: 'Xin chào! 👋 Tôi là trợ lý AI của EatEase. Tôi có thể giúp bạn tìm sản phẩm, giải đáp thắc mắc về đơn hàng, chính sách và nhiều hơn nữa. Bạn cần hỗ trợ gì?',
+            text: 'Xin chào! 👋 Tôi là trợ lý AI của EatEase. Tôi có thể giúp bạn tìm món ăn, giải đáp thắc mắc về thực đơn, đặt bàn và nhiều hơn nữa. Bạn cần hỗ trợ gì?',
         },
     ]);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
     const cooldownRef = useRef(null);
 
-    // Bắt đầu đếm ngược cooldown
-    const startCooldown = (seconds = 5) => {
-        setCooldown(seconds);
-        clearInterval(cooldownRef.current);
-        cooldownRef.current = setInterval(() => {
-            setCooldown((prev) => {
-                if (prev <= 1) {
-                    clearInterval(cooldownRef.current);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-    };
+    useEffect(() => {
+        if (isOpen) {
+            setIsMinimized(false);
+            setTimeout(() => inputRef.current?.focus(), 80);
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         if (isOpen && !isMinimized) {
@@ -110,12 +100,16 @@ export default function AiChatBox() {
         }
     }, [messages, isOpen, isMinimized]);
 
-    useEffect(() => {
-        if (isOpen && !isMinimized) {
-            inputRef.current?.focus();
-            setHasNewMessage(false);
-        }
-    }, [isOpen, isMinimized]);
+    const startCooldown = (seconds = 5) => {
+        setCooldown(seconds);
+        clearInterval(cooldownRef.current);
+        cooldownRef.current = setInterval(() => {
+            setCooldown((prev) => {
+                if (prev <= 1) { clearInterval(cooldownRef.current); return 0; }
+                return prev - 1;
+            });
+        }, 1000);
+    };
 
     const handleSend = async (messageText) => {
         const text = (messageText || input).trim();
@@ -128,224 +122,191 @@ export default function AiChatBox() {
         setLoading(true);
 
         try {
-            // Build history for context (exclude the initial bot greeting)
             const history = newMessages.slice(1, -1).map((msg) => ({
                 role: msg.role,
                 text: msg.text,
             }));
-
             const response = await Axios({
                 ...SummaryApi.chat_message,
                 data: { message: text, history },
             });
-
             if (response.data?.success) {
-                const botMsg = { role: 'bot', text: response.data.data.reply };
-                setMessages((prev) => [...prev, botMsg]);
-                // Notify if window is minimized or closed
-                if (!isOpen || isMinimized) setHasNewMessage(true);
+                setMessages((prev) => [...prev, { role: 'bot', text: response.data.data.reply }]);
             }
         } catch (error) {
             const serverMsg = error?.response?.data?.message;
             setMessages((prev) => [
                 ...prev,
-                {
-                    role: 'bot',
-                    text:
-                        serverMsg ||
-                        'Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau ít phút! 🙏',
-                },
+                { role: 'bot', text: serverMsg || 'Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau ít phút! 🙏' },
             ]);
         } finally {
             setLoading(false);
-            startCooldown(5); // 5s cooldown sau mỗi lần gửi
+            startCooldown(5);
         }
     };
 
     const handleKeyDown = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
-        }
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
     };
 
-    const handleOpen = () => {
-        setIsOpen(true);
-        setIsMinimized(false);
-        setHasNewMessage(false);
-    };
+    const handleClose = () => { setIsMinimized(false); onClose?.(); };
 
-    const handleClose = () => {
-        setIsOpen(false);
-        setIsMinimized(false);
-    };
-
-    const handleMinimize = () => {
-        setIsMinimized(true);
-    };
+    if (!isOpen) return null;
 
     return (
-        <>
-            {/* Floating Button */}
-            {!isOpen && (
+        <div
+            className={`fixed bottom-6 right-28 z-50 w-[360px] rounded-2xl overflow-hidden
+                        flex flex-col transition-all duration-300 ease-out
+                        bg-card dark:bg-gray-900 border border-border
+                        ${isMinimized ? 'h-14' : 'h-[540px]'}`}
+            style={{
+                boxShadow: theme === 'dark'
+                    ? '0 24px 60px rgba(0,0,0,0.6), 0 4px 16px rgba(124,58,237,0.15)'
+                    : '0 24px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(201,96,72,0.08)',
+                backdropFilter: 'blur(16px)',
+                animation: 'chat-open 0.28s cubic-bezier(0.34,1.56,0.64,1) both',
+            }}
+        >
+            <style>{`
+                @keyframes chat-open {
+                    from { opacity: 0; transform: scale(0.86) translateY(18px); }
+                    to   { opacity: 1; transform: scale(1) translateY(0); }
+                }
+                .ai-chat-scroll::-webkit-scrollbar { width: 4px; }
+                .ai-chat-scroll::-webkit-scrollbar-track { background: transparent; }
+                .ai-chat-scroll::-webkit-scrollbar-thumb {
+                    background: rgba(139,92,246,0.25);
+                    border-radius: 99px;
+                }
+            `}</style>
+
+            {/* ── Header ── */}
+            <div
+                className="flex items-center justify-between px-4 py-3 flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%)' }}
+            >
+                <div className="flex items-center gap-2.5">
+                    {/* Avatar với shimmer ring */}
+                    <div className="relative w-9 h-9 rounded-full bg-white/15 backdrop-blur flex items-center justify-center shadow-inner">
+                        <Bot size={17} className="text-white" />
+                        <span className="absolute inset-0 rounded-full ring-1 ring-white/25" />
+                    </div>
+                    <div>
+                        <p className="text-white font-semibold text-sm leading-tight" style={{ fontFamily: 'Bahnschrift, system-ui, sans-serif', letterSpacing: '0.01em' }}>
+                            Trợ lý AI
+                        </p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="w-1.5 h-1.5 bg-green-400 rounded-full shadow shadow-green-400/60" />
+                            <p className="text-violet-200 text-[10.5px] tracking-wide">
+                                EatEase · Powered by Gemini
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex items-center gap-0.5">
+                    <Link
+                        to="/dashboard/chat-support-customer"
+                        className="w-7 h-7 rounded-full hover:bg-white/15 flex items-center justify-center text-white/70 hover:text-white transition"
+                        title="Mở rộng"
+                    >
+                        <Maximize size={14} />
+                    </Link>
+                    <button
+                        onClick={() => setIsMinimized((v) => !v)}
+                        className="w-7 h-7 rounded-full hover:bg-white/15 flex items-center justify-center text-white/70 hover:text-white transition cursor-pointer"
+                    >
+                        <ChevronDown size={15} className={`transition-transform duration-200 ${isMinimized ? 'rotate-180' : ''}`} />
+                    </button>
+                    <button
+                        onClick={handleClose}
+                        className="w-7 h-7 rounded-full hover:bg-white/15 flex items-center justify-center text-white/70 hover:text-white transition cursor-pointer"
+                    >
+                        <X size={15} />
+                    </button>
+                </div>
+            </div>
+
+            {/* ── Minimized bar ── */}
+            {isMinimized && (
                 <button
-                    onClick={handleOpen}
-                    className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 
-                               text-white shadow-2xl shadow-violet-500/40 hover:shadow-violet-500/60
-                               flex items-center justify-center cursor-pointer
-                               hover:scale-110 active:scale-95 transition-all duration-200"
-                    title="Chat với AI"
+                    onClick={() => setIsMinimized(false)}
+                    className="flex-1 flex items-center justify-center gap-1.5 text-sm cursor-pointer transition-colors text-muted-foreground hover:text-foreground"
                 >
-                    <Bot size={26} />
-                    {hasNewMessage && (
-                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse" />
-                    )}
+                    <Sparkles size={12} />
+                    Tiếp tục hội thoại với AI
                 </button>
             )}
 
-            {/* Chat Window */}
-            {isOpen && (
-                <div
-                    className={`fixed bottom-6 right-6 z-50 w-[360px] rounded-2xl shadow-2xl shadow-black/20 
-                                border border-white/10 overflow-hidden
-                                transition-all duration-300 ease-out
-                                ${isMinimized ? 'h-14' : 'h-[520px]'}
-                                flex flex-col bg-gray-50 dark:bg-gray-900`}
-                >
-                    {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 flex-shrink-0">
-                        <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
-                                <Bot size={16} className="text-white" />
-                            </div>
-                            <div>
-                                <p className="text-white font-semibold text-sm leading-tight">
-                                    Trợ lý AI
-                                </p>
-                                <div className="flex items-center gap-1">
-                                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full" />
-                                    <p className="text-violet-200 text-[11px]">
-                                        EatEase
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <Link
-                                to={'/dashboard/chat-support-customer'}
-                                className="w-7 h-7 rounded-full hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition cursor-pointer"
-                                title="Mở rộng"
-                            >
-                                <Maximize size={16} />
-                            </Link>
-                            <button
-                                onClick={handleMinimize}
-                                className="w-7 h-7 rounded-full hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition cursor-pointer"
-                                title="Thu nhỏ"
-                            >
-                                <ChevronDown size={16} />
-                            </button>
-                            <button
-                                onClick={handleClose}
-                                className="w-7 h-7 rounded-full hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition cursor-pointer"
-                                title="Đóng"
-                            >
-                                <X size={16} />
-                            </button>
-                        </div>
+            {/* ── Body ── */}
+            {!isMinimized && (
+                <>
+                    {/* Messages area */}
+                    <div
+                        className="ai-chat-scroll flex-1 overflow-y-auto px-3 pt-4 pb-2 bg-background dark:bg-gray-950"
+                    >
+                        {messages.map((msg, i) => (
+                            <ChatBubble key={i} role={msg.role} text={msg.text} />
+                        ))}
+                        {loading && <TypingIndicator />}
+                        <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Minimized expand bar */}
-                    {isMinimized && (
-                        <button
-                            onClick={() => setIsMinimized(false)}
-                            className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400 
-                                       hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer text-sm gap-1"
+                    {/* Quick suggestions */}
+                    {messages.length === 1 && !loading && (
+                        <div
+                            className="px-3 pb-2 pt-2 flex flex-wrap gap-1.5 bg-background dark:bg-gray-950"
                         >
-                            <Sparkles size={13} />
-                            Tiếp tục hội thoại
-                        </button>
+                            {QUICK_SUGGESTIONS.map((s) => (
+                                <button
+                                    key={s}
+                                    onClick={() => handleSend(s)}
+                                    className="text-[11px] px-2.5 py-1 rounded-full transition cursor-pointer"
+                                    style={{
+                                        background: 'rgba(139,92,246,0.08)',
+                                        color: '#7c3aed',
+                                        border: '1px solid rgba(139,92,246,0.2)',
+                                    }}
+                                >
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
                     )}
 
-                    {/* Messages */}
-                    {!isMinimized && (
-                        <>
-                            <div className="flex-1 overflow-y-auto px-3 pt-4 pb-2 space-y-0.5 scroll-smooth">
-                                {messages.map((msg, i) => (
-                                    <ChatBubble
-                                        key={i}
-                                        role={msg.role}
-                                        text={msg.text}
-                                    />
-                                ))}
-                                {loading && <TypingIndicator />}
-                                <div ref={messagesEndRef} />
-                            </div>
-
-                            {/* Quick suggestions — only show initially */}
-                            {messages.length === 1 && !loading && (
-                                <div className="px-3 pb-2 flex flex-wrap gap-1.5">
-                                    {QUICK_SUGGESTIONS.map((s) => (
-                                        <button
-                                            key={s}
-                                            onClick={() => handleSend(s)}
-                                            className="text-[11px] px-2.5 py-1 rounded-full bg-violet-50 dark:bg-violet-900/30
-                                                       text-violet-700 dark:text-violet-300
-                                                       border border-violet-200 dark:border-violet-700
-                                                       hover:bg-violet-100 dark:hover:bg-violet-800/40
-                                                       transition cursor-pointer"
-                                        >
-                                            {s}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Input */}
-                            <div className="px-3 pb-3 pt-2 flex-shrink-0 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
-                                <div className="flex items-end gap-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 px-3 py-2 shadow-sm">
-                                    <textarea
-                                        ref={inputRef}
-                                        value={input}
-                                        onChange={(e) =>
-                                            setInput(e.target.value)
-                                        }
-                                        onKeyDown={handleKeyDown}
-                                        placeholder="Nhập câu hỏi của bạn..."
-                                        rows={1}
-                                        disabled={loading}
-                                        className="flex-1 resize-none bg-transparent text-sm text-gray-800 dark:text-gray-100 
-                                                   placeholder-gray-400 outline-none leading-relaxed max-h-24 overflow-y-auto"
-                                        style={{ field: 'sizing-content' }}
-                                    />
-                                    <button
-                                        onClick={() => handleSend()}
-                                        disabled={
-                                            loading ||
-                                            !input.trim() ||
-                                            cooldown > 0
-                                        }
-                                        className="flex-shrink-0 w-8 h-8 rounded-lg 
-                                                   bg-gradient-to-br from-violet-500 to-indigo-600
-                                                   text-white flex items-center justify-center
-                                                   hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed
-                                                   transition active:scale-95 cursor-pointer shadow text-[11px] font-bold"
-                                    >
-                                        {cooldown > 0 ? (
-                                            cooldown
-                                        ) : (
-                                            <Send size={14} />
-                                        )}
-                                    </button>
-                                </div>
-                                <p className="text-center text-[10px] text-gray-400 dark:text-gray-600 mt-1.5">
-                                    Powered by Google Gemini AI
-                                </p>
-                            </div>
-                        </>
-                    )}
-                </div>
+                    {/* Input bar */}
+                    <div
+                        className="px-3 pb-3 pt-2 flex-shrink-0 border-t border-border bg-card dark:bg-gray-900"
+                    >
+                        <div
+                            className="flex items-end gap-2 rounded-xl px-3 py-2 bg-background dark:bg-gray-950 border border-border"
+                        >
+                            <textarea
+                                ref={inputRef}
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Hỏi tôi bất cứ điều gì..."
+                                rows={1}
+                                disabled={loading}
+                                className="flex-1 resize-none bg-transparent text-sm placeholder-gray-400 dark:placeholder-gray-500 outline-none leading-relaxed max-h-24 overflow-y-auto text-foreground"
+                            />
+                            <button
+                                onClick={() => handleSend()}
+                                disabled={loading || !input.trim() || cooldown > 0}
+                                className="flex-shrink-0 w-8 h-8 rounded-lg text-white flex items-center justify-center
+                                           hover:opacity-90 disabled:opacity-35 disabled:cursor-not-allowed
+                                           transition active:scale-95 cursor-pointer text-[11px] font-bold shadow"
+                                style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}
+                            >
+                                {cooldown > 0 ? cooldown : <Send size={13} />}
+                            </button>
+                        </div>
+                        <p className="text-center text-[10px] mt-1.5 text-muted-foreground">
+                            Powered by Google Gemini AI
+                        </p>
+                    </div>
+                </>
             )}
-        </>
+        </div>
     );
 }

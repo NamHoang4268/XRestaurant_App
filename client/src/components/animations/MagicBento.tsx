@@ -12,6 +12,14 @@ export interface BentoCardProps {
     colSpan?: number;
     /** Span rows in the grid */
     rowSpan?: number;
+    /** Background image URL */
+    image?: string;
+    /** Badge text to display at bottom */
+    badge?: string;
+    /** Badge color variant */
+    badgeColor?: 'default' | 'green';
+    /** Number of stars to display (for rating cards) */
+    stars?: number;
 }
 
 export interface BentoProps {
@@ -196,23 +204,59 @@ export const BentoCard: React.FC<{
                 card.children
             ) : (
                 <>
+                    {/* Background image with overlay */}
+                    {card.image && (
+                        <div
+                            className="bento-card__bg-image"
+                            style={{ backgroundImage: `url(${card.image})` }}
+                        />
+                    )}
+
                     <div className="bento-card__header">
                         {card.icon && (
                             <span className="bento-card__icon">{card.icon}</span>
                         )}
                         <span className="bento-card__label">{card.label}</span>
                     </div>
+
                     <div className="bento-card__content">
                         <h3
                             className={`bento-card__title${textAutoHide ? ' clamp-1' : ''}`}
+                            style={{ whiteSpace: 'pre-line' }}
                         >
                             {card.title}
                         </h3>
+
+                        {/* Stars for rating cards */}
+                        {card.stars && (
+                            <div className="bento-card__stars">
+                                {Array.from({ length: card.stars }).map((_, i) => (
+                                    <svg
+                                        key={i}
+                                        className="star-icon"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                    >
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                                    </svg>
+                                ))}
+                            </div>
+                        )}
+
                         <p
                             className={`bento-card__desc${textAutoHide ? ' clamp-2' : ''}`}
                         >
                             {card.description}
                         </p>
+
+                        {/* Badge at bottom */}
+                        {card.badge && (
+                            <div
+                                className={`bento-card__badge ${card.badgeColor === 'green' ? 'bento-card__badge--green' : ''}`}
+                            >
+                                {card.badge}
+                            </div>
+                        )}
                     </div>
                 </>
             )}
@@ -317,6 +361,28 @@ export const MagicBentoStyles: React.FC<{
       box-shadow: 0 8px 25px rgba(0,0,0,.25);
     }
 
+    /* Background image */
+    .bento-card__bg-image {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.15;
+      transition: opacity .3s ease, transform .3s ease;
+      z-index: 0;
+    }
+    .bento-card:hover .bento-card__bg-image {
+      opacity: 0.25;
+      transform: scale(1.05);
+    }
+
+    /* Ensure content is above background */
+    .bento-card__header,
+    .bento-card__content {
+      position: relative;
+      z-index: 1;
+    }
+
     /* Tilt */
     .bento-card--tilt {
       transform-style: preserve-3d;
@@ -366,9 +432,45 @@ export const MagicBentoStyles: React.FC<{
     .bento-card__header  { display: flex; align-items: center; gap: .5rem; }
     .bento-card__icon    { font-size: 1.5rem; line-height: 1; }
     .bento-card__label   { font-size: .875rem; opacity: .7; }
-    .bento-card__content { display: flex; flex-direction: column; }
-    .bento-card__title   { font-size: 1.125rem; font-weight: 600; margin: 0 0 .4rem; }
+    .bento-card__content { display: flex; flex-direction: column; gap: .5rem; }
+    .bento-card__title   { font-size: 1.125rem; font-weight: 600; margin: 0; line-height: 1.3; }
     .bento-card__desc    { font-size: .8125rem; line-height: 1.5; opacity: .8; margin: 0; }
+    
+    /* Stars */
+    .bento-card__stars {
+      display: flex;
+      gap: .25rem;
+      margin: -.25rem 0;
+    }
+    .star-icon {
+      width: 1rem;
+      height: 1rem;
+      color: #fbbf24;
+      filter: drop-shadow(0 1px 2px rgba(251,191,36,.3));
+    }
+
+    /* Badge */
+    .bento-card__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .7rem;
+      padding: .35rem .75rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.15);
+      margin-top: .25rem;
+      align-self: flex-start;
+      font-weight: 500;
+      letter-spacing: .02em;
+    }
+    .bento-card__badge--green {
+      background: rgba(34,197,94,.15);
+      border-color: rgba(34,197,94,.3);
+      color: #86efac;
+    }
+
     .clamp-1 { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:1; overflow:hidden; }
     .clamp-2 { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; }
   `}</style>
