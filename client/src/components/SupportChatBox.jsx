@@ -186,10 +186,14 @@ export default function SupportChatBox({ isOpen = false, onClose }) {
 
     return (
         <div
-            className={`fixed bottom-6 right-28 z-50 w-[360px] rounded-2xl overflow-hidden
-                        flex flex-col transition-all duration-300 ease-out
+            className={`fixed z-50 flex flex-col transition-all duration-300 ease-out
                         bg-card dark:bg-gray-900 border border-border
-                        ${isMinimized ? 'h-14' : 'h-[520px]'}`}
+                        ${isMinimized ? 'h-14' : 'h-[520px] md:h-[520px]'}
+                        
+                        /* Mobile: fullscreen */
+                        inset-0 md:inset-auto
+                        rounded-none md:rounded-2xl
+                        md:bottom-6 md:right-28 md:w-[360px]`}
             style={{
                 boxShadow: theme === 'dark'
                     ? '0 24px 60px rgba(0,0,0,0.6), 0 4px 16px rgba(201,96,72,0.15)'
@@ -207,7 +211,7 @@ export default function SupportChatBox({ isOpen = false, onClose }) {
 
             {/* Header */}
             <div
-                className="flex items-center justify-between px-4 py-3 flex-shrink-0"
+                className="flex items-center justify-between px-4 py-3 md:py-3 flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)' }}
             >
                 <div className="flex items-center gap-2.5">
@@ -242,16 +246,18 @@ export default function SupportChatBox({ isOpen = false, onClose }) {
                     </div>
                 </div>
                 <div className="flex items-center gap-0.5">
+                    {/* Desktop only: Maximize button */}
                     <Link
                         to={'/dashboard/chat-support-customer'}
-                        className="w-7 h-7 rounded-full hover:bg-white/15 flex items-center justify-center text-white/70 hover:text-white transition"
+                        className="hidden md:flex w-7 h-7 rounded-full hover:bg-white/15 items-center justify-center text-white/70 hover:text-white transition"
                         title="Mở rộng"
                     >
                         <Maximize size={14} />
                     </Link>
+                    {/* Desktop only: Minimize button */}
                     <button
                         onClick={() => setIsMinimized((v) => !v)}
-                        className="w-7 h-7 rounded-full hover:bg-white/15 flex items-center justify-center text-white/70 hover:text-white transition cursor-pointer"
+                        className="hidden md:flex w-7 h-7 rounded-full hover:bg-white/15 items-center justify-center text-white/70 hover:text-white transition cursor-pointer"
                     >
                         <ChevronDown
                             size={15}

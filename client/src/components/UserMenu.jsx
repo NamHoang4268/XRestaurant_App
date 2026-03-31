@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Divider from './Divider';
@@ -7,13 +7,14 @@ import SummaryApi from '../common/SummaryApi';
 import { logout, updateUserPoints } from '../store/userSlice';
 import { toast } from 'react-hot-toast';
 import AxiosToastError from './../utils/AxiosToastError';
-import { BiLinkExternal, BiRefresh } from 'react-icons/bi';
+import { BiRefresh } from 'react-icons/bi';
 import { ChevronDown } from 'lucide-react';
-// import isAdmin from '../utils/isAdmin';
 import GradientText from './GradientText';
 import isAdmin from '@/utils/isAdmin';
 import { RiExternalLinkFill } from 'react-icons/ri';
 import defaultAvatar from '@/assets/defaultAvatar.png';
+import ShinyText from './animations/ShinyText';
+import { useTheme } from 'next-themes';
 
 const UserMenu = ({ close }) => {
     const user = useSelector((state) => state.user);
@@ -22,6 +23,7 @@ const UserMenu = ({ close }) => {
     const location = useLocation();
     const menuRef = useRef();
     const [isLoadingPoints, setIsLoadingPoints] = useState(false);
+    const { theme } = useTheme();
 
     // State for collapsible menu sections
     const [expandedSections, setExpandedSections] = useState({
@@ -171,6 +173,40 @@ const UserMenu = ({ close }) => {
         }));
     };
 
+    // MenuLink Component for consistent styling
+    const MenuLink = ({ to, children, onClick = handleClose }) => {
+        const active = isActive(to);
+        return (
+            <Link
+                onClick={onClick}
+                to={to}
+                className={`flex items-center gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:scale-[1.01] active:scale-[0.99] text-foreground ${
+                    active ? 'font-semibold shadow-md' : 'font-medium'
+                }`}
+                style={
+                    active
+                        ? {
+                            background: 'rgba(201, 96, 72, 0.15)',
+                            color: '#C96048',
+                        }
+                        : {}
+                }
+                onMouseEnter={(e) => {
+                    if (!active) {
+                        e.currentTarget.style.background = 'rgba(var(--card-rgb, 255, 255, 255), 0.5)';
+                    }
+                }}
+                onMouseLeave={(e) => {
+                    if (!active) {
+                        e.currentTarget.style.background = 'transparent';
+                    }
+                }}
+            >
+                <span className="text-sm">{children}</span>
+            </Link>
+        );
+    };
+
     // MenuSection Component for collapsible groups
     const MenuSection = ({
         title,
@@ -187,8 +223,20 @@ const UserMenu = ({ close }) => {
             <div className="mb-1">
                 <button
                     onClick={() => toggleSection(sectionKey)}
-                    className="w-full flex items-center justify-between px-4 py-2.5 
-                               hover:bg-white/10 transition-colors rounded-lg text-white"
+                    className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-all hover:scale-[1.01] active:scale-[0.99] text-foreground"
+                    style={{
+                        background: isExpanded ? 'rgba(201, 96, 72, 0.08)' : 'transparent',
+                    }}
+                    onMouseEnter={(e) => {
+                        if (!isExpanded) {
+                            e.currentTarget.style.background = 'rgba(var(--card-rgb, 255, 255, 255), 0.5)';
+                        }
+                    }}
+                    onMouseLeave={(e) => {
+                        if (!isExpanded) {
+                            e.currentTarget.style.background = 'transparent';
+                        }
+                    }}
                 >
                     <div className="flex items-center gap-2.5">
                         <span className="text-base">{icon}</span>
@@ -199,6 +247,7 @@ const UserMenu = ({ close }) => {
                             isExpanded ? 'rotate-180' : ''
                         }`}
                         size={16}
+                        style={{ color: '#C96048' }}
                     />
                 </button>
                 {isExpanded && (
@@ -211,39 +260,54 @@ const UserMenu = ({ close }) => {
     return (
         <div
             ref={menuRef}
-            className="bg-black text-muted-foreground rounded-lg shadow-lg overflow-hidden w-full"
+            className="rounded-xl shadow-2xl overflow-hidden w-full border border-border"
+            style={{
+                background: 'rgba(var(--card-rgb, 255, 255, 255), 0.95)',
+                backdropFilter: 'blur(20px)',
+            }}
         >
-            <div className="p-4 py-2">
+            <div className="p-4 py-3">
                 <div className="flex items-center gap-3">
                     <Link
                         to={'/dashboard/profile'}
-                        className="relative w-16 hover:opacity-85"
+                        className="relative w-16 hover:opacity-85 transition-opacity"
                     >
                         <img
                             src={user?.avatar || defaultAvatar}
                             alt={user?.name}
-                            className="w-16 h-16 p-0.5 rounded-full object-cover border-2 border-red-600"
+                            className="w-16 h-16 p-0.5 rounded-full object-cover border-2"
+                            style={{
+                                borderColor: '#C96048',
+                            }}
                         />
                         {user.role === 'ADMIN' && (
                             <span
-                                className="absolute -bottom-1 bg-rose-600 text-white text-xs font-medium
-                                        px-2.5 py-0.5 rounded-full"
+                                className="absolute -bottom-1 text-white text-xs font-medium px-2.5 py-0.5 rounded-full"
+                                style={{
+                                    background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                                }}
                             >
                                 Quản trị
                             </span>
                         )}
                     </Link>
-                    <div className="min-w-0 text-white">
+                    <div className="min-w-0">
                         <Link
                             to={'/dashboard/profile'}
-                            className="flex items-center gap-1 text-sm font-bold truncate
-                                    hover:opacity-80"
+                            className="flex items-center gap-1 text-sm font-bold truncate hover:opacity-80 transition-opacity text-foreground"
                             title="Tài khoản"
                         >
-                            {user?.name}
-                            <RiExternalLinkFill className="mb-2" />
+                            <ShinyText
+                                text={user?.name || 'User'}
+                                disabled={false}
+                                speed={3}
+                                color={theme === 'dark' ? '#e5e5e5' : '#1a1a1a'}
+                                shineColor={theme === 'dark' ? '#ffffff' : '#C96048'}
+                                spread={90}
+                            />
+                            <RiExternalLinkFill className="mb-2 flex-shrink-0" style={{ color: '#C96048' }} />
                         </Link>
-                        <p className="text-xs truncate">{user?.email}</p>
+                        <p className="text-xs truncate text-muted-foreground">{user?.email}</p>
                     </div>
                 </div>
                 <div className="mt-3 flex items-center justify-between">
@@ -271,7 +335,8 @@ const UserMenu = ({ close }) => {
                     <button
                         onClick={fetchUserPoints}
                         disabled={isLoadingPoints}
-                        className="text-orange-600 hover:text-orange-400 disabled:opacity-50"
+                        className="hover:opacity-70 disabled:opacity-50 transition-opacity"
+                        style={{ color: '#C96048' }}
                     >
                         <BiRefresh
                             className={`inline-block ${
@@ -290,45 +355,15 @@ const UserMenu = ({ close }) => {
                     sectionKey="products"
                     show={isAdmin(user.role)}
                 >
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/category'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/category')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Quản lý Danh mục
-                        </span>
-                    </Link>
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/sub-category'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/sub-category')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Quản lý Loại sản phẩm
-                        </span>
-                    </Link>
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/product'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/product')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Quản lý Sản phẩm
-                        </span>
-                    </Link>
+                    <MenuLink to="/dashboard/category">
+                        Quản lý Danh mục
+                    </MenuLink>
+                    <MenuLink to="/dashboard/sub-category">
+                        Quản lý Loại sản phẩm
+                    </MenuLink>
+                    <MenuLink to="/dashboard/product">
+                        Quản lý Sản phẩm
+                    </MenuLink>
                 </MenuSection>
                 {/* Restaurant Section - ADMIN, WAITER, CASHIER */}
                 <MenuSection
@@ -344,83 +379,31 @@ const UserMenu = ({ close }) => {
                     )}
                 >
                     {user.role === 'ADMIN' && (
-                        <Link
-                            onClick={handleClose}
-                            to={'/dashboard/table'}
-                            className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                                isActive('/dashboard/table')
-                                    ? 'bg-white/20 shadow-md'
-                                    : ''
-                            }`}
-                        >
-                            <span className="text-white font-medium text-sm">
-                                Quản lý Bàn ăn
-                            </span>
-                        </Link>
+                        <MenuLink to="/dashboard/table">
+                            Quản lý Bàn ăn
+                        </MenuLink>
                     )}
                     {user.role === 'WAITER' && (
-                        <Link
-                            onClick={handleClose}
-                            to={'/dashboard/table-orders'}
-                            className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                                isActive('/dashboard/table-orders')
-                                    ? 'bg-white/20 shadow-md'
-                                    : ''
-                            }`}
-                        >
-                            <span className="text-white font-medium text-sm">
-                                Quản lý Đơn gọi món
-                            </span>
-                        </Link>
+                        <MenuLink to="/dashboard/table-orders">
+                            Quản lý Đơn gọi món
+                        </MenuLink>
                     )}
                     {['ADMIN', 'WAITER'].includes(user.role) && (
-                        <Link
-                            onClick={handleClose}
-                            to={'/dashboard/booking'}
-                            className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                                isActive('/dashboard/booking')
-                                    ? 'bg-white/20 shadow-md'
-                                    : ''
-                            }`}
-                        >
-                            <span className="text-white font-medium text-sm">
-                                Danh sách Đặt bàn
-                            </span>
-                        </Link>
+                        <MenuLink to="/dashboard/booking">
+                            Danh sách Đặt bàn
+                        </MenuLink>
                     )}
-                    {['ADMIN', 'WAITER', 'CASHIER'].includes(
-                        user.role
-                    ) && (
-                        <Link
-                            onClick={handleClose}
-                            to={'/dashboard/bill'}
-                            className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                                isActive('/dashboard/bill')
-                                    ? 'bg-white/20 shadow-md'
-                                    : ''
-                            }`}
-                        >
-                            <span className="text-white font-medium text-sm">
-                                {user.role === 'CASHIER'
-                                    ? 'Xử lý Thanh toán'
-                                    : 'Danh sách Hóa đơn'}
-                            </span>
-                        </Link>
+                    {['ADMIN', 'WAITER', 'CASHIER'].includes(user.role) && (
+                        <MenuLink to="/dashboard/bill">
+                            {user.role === 'CASHIER'
+                                ? 'Xử lý Thanh toán'
+                                : 'Danh sách Hóa đơn'}
+                        </MenuLink>
                     )}
                     {user.role === 'ADMIN' && (
-                        <Link
-                            onClick={handleClose}
-                            to={'/dashboard/report'}
-                            className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                                isActive('/dashboard/report')
-                                    ? 'bg-white/20 shadow-md'
-                                    : ''
-                            }`}
-                        >
-                            <span className="text-white font-medium text-sm">
-                                Báo cáo Thống kê
-                            </span>
-                        </Link>
+                        <MenuLink to="/dashboard/report">
+                            Báo cáo Thống kê
+                        </MenuLink>
                     )}
                 </MenuSection>
                 {/* HR Section - ADMIN only */}
@@ -430,45 +413,15 @@ const UserMenu = ({ close }) => {
                     sectionKey="hr"
                     show={user.role === 'ADMIN'}
                 >
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/employee-management'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/employee-management')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Quản lý Nhân viên
-                        </span>
-                    </Link>
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/shift-management'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/shift-management')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Quản lý Ca làm
-                        </span>
-                    </Link>
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/attendance-management'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/attendance-management')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Quản lý Chấm công
-                        </span>
-                    </Link>
+                    <MenuLink to="/dashboard/employee-management">
+                        Quản lý Nhân viên
+                    </MenuLink>
+                    <MenuLink to="/dashboard/shift-management">
+                        Quản lý Ca làm
+                    </MenuLink>
+                    <MenuLink to="/dashboard/attendance-management">
+                        Quản lý Chấm công
+                    </MenuLink>
                 </MenuSection>
                 {/* Reports & Voucher Section - ADMIN only */}
                 <MenuSection
@@ -477,19 +430,9 @@ const UserMenu = ({ close }) => {
                     sectionKey="reports"
                     show={isAdmin(user.role)}
                 >
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/voucher'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/voucher')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Quản lý Mã giảm giá
-                        </span>
-                    </Link>
+                    <MenuLink to="/dashboard/voucher">
+                        Quản lý Mã giảm giá
+                    </MenuLink>
                 </MenuSection>
                 {/* Employee Section - WAITER, CHEF, CASHIER */}
                 <MenuSection
@@ -500,45 +443,15 @@ const UserMenu = ({ close }) => {
                         user.role
                     )}
                 >
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/employee-dashboard'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/employee-dashboard')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Dashboard Nhân viên
-                        </span>
-                    </Link>
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/my-shifts'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/my-shifts')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Ca làm của tôi
-                        </span>
-                    </Link>
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/my-performance'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/my-performance')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Hiệu suất của tôi
-                        </span>
-                    </Link>
+                    <MenuLink to="/dashboard/employee-dashboard">
+                        Dashboard Nhân viên
+                    </MenuLink>
+                    <MenuLink to="/dashboard/my-shifts">
+                        Ca làm của tôi
+                    </MenuLink>
+                    <MenuLink to="/dashboard/my-performance">
+                        Hiệu suất của tôi
+                    </MenuLink>
                 </MenuSection>
                 {/* Personal Section - USER only */}
                 <MenuSection
@@ -547,39 +460,22 @@ const UserMenu = ({ close }) => {
                     sectionKey="personal"
                     show={user.role === 'USER'}
                 >
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/profile'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/profile')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Tài khoản cá nhân
-                        </span>
-                    </Link>
-                    <Link
-                        onClick={handleClose}
-                        to={'/dashboard/my-orders'}
-                        className={`flex items-center text-bl gap-4 px-4 py-2.5 rounded-lg transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.01] active:scale-[0.99] ${
-                            isActive('/dashboard/my-orders')
-                                ? 'bg-white/20 shadow-md'
-                                : ''
-                        }`}
-                    >
-                        <span className="text-white font-medium text-sm">
-                            Lịch sử mua hàng
-                        </span>
-                    </Link>
+                    <MenuLink to="/dashboard/profile">
+                        Tài khoản cá nhân
+                    </MenuLink>
+                    <MenuLink to="/dashboard/my-orders">
+                        Lịch sử mua hàng
+                    </MenuLink>
                 </MenuSection>
 
                 <Divider />
-                <div className="pb-2">
+                <div className="pb-2 px-2">
                     <button
                         onClick={handleLogout}
-                        className="text-white w-full text-sm text-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:bg-white/15 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
+                        className="w-full text-sm text-center px-4 py-3 rounded-xl transition-all duration-300 ease-out cursor-pointer hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] text-white font-medium"
+                        style={{
+                            background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                        }}
                     >
                         Đăng xuất
                     </button>

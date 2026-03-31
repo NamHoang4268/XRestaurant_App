@@ -214,6 +214,23 @@ body {
     font-style: normal;
 }
 
+/* Prevent body shift when Sheet/Dialog opens */
+body[data-scroll-locked] {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Ensure Sheet overlay is truly fixed and doesn't affect layout */
+[data-radix-dialog-overlay],
+[data-slot="sheet-overlay"] {
+    position: fixed !important;
+}
+
+[data-radix-dialog-content],
+[data-slot="sheet-content"] {
+    position: fixed !important;
+}
+
 .text-gradient {
     background: linear-gradient(
         120deg,

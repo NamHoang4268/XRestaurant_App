@@ -2,19 +2,17 @@ import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import { Menu, MessageSquare, Search as SearchIcon, X } from 'lucide-react';
 import logo from '@/assets/logo.png';
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
     FaBoxOpen,
     FaCaretDown,
     FaCaretUp,
-    FaCalendarAlt,
     FaHome,
     FaInfoCircle,
     FaPhone,
 } from 'react-icons/fa';
-// eslint-disable-next-line no-unused-vars
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from 'react-redux';
 import UserMenu from '../UserMenu';
 import { useGlobalContext } from '../../provider/GlobalProvider';
@@ -23,6 +21,7 @@ import Search from '../Search';
 import { valideURLConvert } from '@/utils/valideURLConvert';
 import { ThemeToggle } from '../theme-toggle';
 import { useSupportChat } from '../../contexts/SupportChatContext';
+import ShinyText from '../animations/ShinyText';
 
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -381,16 +380,52 @@ export default function Header() {
                         </div>
 
                         {/* Mobile Nav */}
-                        <div className="md:hidden">
+                        <div className="md:hidden flex items-center gap-2">
+                            {/* Theme Toggle */}
+                            <ThemeToggle />
+
+                            {/* User Avatar or Login */}
+                            {user?._id ? (
+                                <button
+                                    onClick={() => setIsMobileMenuOpen(true)}
+                                    className="relative p-0.5 overflow-hidden rounded-full liquid-glass hover:scale-105 transition-transform active:scale-95"
+                                >
+                                    <img
+                                        src={user.avatar || defaultAvatar}
+                                        alt={user.name}
+                                        className="w-8 h-8 rounded-full object-cover"
+                                        width={32}
+                                        height={32}
+                                    />
+                                    {user.role === 'ADMIN' && unreadCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white border-2 border-background">
+                                            {unreadCount > 9 ? '9+' : unreadCount}
+                                        </span>
+                                    )}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={redirectToLoginPage}
+                                    className="text-xs font-medium px-3 py-1.5 rounded-full text-white hover:shadow-lg transition-all active:scale-95"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                                    }}
+                                >
+                                    Đăng nhập
+                                </button>
+                            )}
+
+                            {/* Menu Icon */}
                             <Sheet
                                 open={isMobileMenuOpen}
                                 onOpenChange={setIsMobileMenuOpen}
+                                modal={true}
                             >
                                 <SheetTrigger asChild>
                                     <Button
                                         variant="outline"
                                         size="icon"
-                                        className="border-gray-700 bg-gray-800 hover:bg-gray-600 hover:text-lime-300"
+                                        className="border-border bg-card hover:bg-accent hover:text-[#C96048] transition-all active:scale-95"
                                     >
                                         <Menu className="h-5 w-5" />
                                         <span className="sr-only">
@@ -400,9 +435,44 @@ export default function Header() {
                                 </SheetTrigger>
                                 <SheetContent
                                     side="right"
-                                    className="liquid-glass border-gray-800 p-0 w-72 flex flex-col"
+                                    className="p-0 w-72 flex flex-col border-border fixed"
+                                    style={{
+                                        background: 'rgba(var(--card-rgb, 255, 255, 255), 0.95)',
+                                        backdropFilter: 'blur(20px)',
+                                    }}
+                                    onOpenAutoFocus={(e) => e.preventDefault()}
                                 >
-                                    <div className="flex items-center gap-1.5 px-4 py-4 border-b border-gray-800">
+                                    {/* User Section at Top */}
+                                    {user?._id && (
+                                        <div className="px-4 py-4 border-b border-border">
+                                            <div className="flex items-center gap-3">
+                                                <div className="relative p-0.5 overflow-hidden rounded-full liquid-glass">
+                                                    <img
+                                                        src={user.avatar || defaultAvatar}
+                                                        alt={user.name}
+                                                        className="w-12 h-12 rounded-full object-cover"
+                                                        width={48}
+                                                        height={48}
+                                                    />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-semibold text-foreground truncate">
+                                                        {user.name}
+                                                    </p>
+                                                    {user.role === 'ADMIN' && (
+                                                        <span className="text-xs px-2 py-0.5 rounded-full" style={{ 
+                                                            color: '#C96048',
+                                                            background: 'rgba(201, 96, 72, 0.1)',
+                                                        }}>
+                                                            Quản trị viên
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="flex items-center justify-center gap-1.5 pb-4 border-b border-border">
                                         <Link
                                             to="/"
                                             onClick={scrollToTop}
@@ -411,19 +481,24 @@ export default function Header() {
                                             <img
                                                 src={logo}
                                                 alt="EatEase logo"
-                                                width={25}
-                                                height={25}
-                                                className="h-5 w-5"
+                                                className="h-8 w-8"
                                             />
-                                            <span className="font-semibold tracking-wide">
-                                                EatEase
+                                            <span className="font-semibold text-xl tracking-wide text-foreground">
+                                                <ShinyText
+                                                    text="EatEase"
+                                                    disabled={false}
+                                                    speed={3}
+                                                    color="#C96048"
+                                                    shineColor="#d97a66"
+                                                    spread={90}
+                                                />
                                             </span>
                                         </Link>
                                     </div>
                                     <div className="px-2">
                                         <Search />
                                     </div>
-                                    <nav className="flex flex-col gap-1 mt-2 text-gray-200">
+                                    <nav className="flex flex-col gap-1 mt-2">
                                         {links.map((l) => {
                                             const isBookingLink =
                                                 l.href === '/booking';
@@ -450,11 +525,18 @@ export default function Header() {
                                                             : l.href
                                                     }
                                                     onClick={handleClick}
-                                                    className={`flex items-center gap-3 px-4 py-3 transition-colors ${
+                                                    className={`flex items-center gap-3 px-4 py-3 transition-all active:scale-95 ${
                                                         isActiveLink(l.href)
-                                                            ? 'text-[#C96048] bg-[#C96048]/8 font-semibold border-l-2 border-[#C96048]'
-                                                            : 'hover:bg-gray-900 hover:text-[#C96048]'
+                                                            ? 'text-[#C96048] font-semibold border-l-2 border-[#C96048]'
+                                                            : 'text-foreground hover:text-[#C96048]'
                                                     }`}
+                                                    style={
+                                                        isActiveLink(l.href)
+                                                            ? {
+                                                                background: 'rgba(201, 96, 72, 0.08)',
+                                                            }
+                                                            : {}
+                                                    }
                                                 >
                                                     <span className="inline-flex items-center justify-center w-5 h-5">
                                                         {l.icon}
@@ -466,7 +548,7 @@ export default function Header() {
                                             );
                                         })}
                                     </nav>
-                                    <div className="mt-auto border-t border-gray-800 p-4">
+                                    <div className="mt-auto border-t border-border p-4">
                                         <div className="flex items-center justify-center w-full gap-5">
                                             {user?._id ? (
                                                 <div
@@ -475,46 +557,19 @@ export default function Header() {
                                                 >
                                                     <button
                                                         onClick={toggleUserMenu}
-                                                        className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg hover:bg-white/10 transition-colors"
-                                                        aria-expanded={
-                                                            openUserMenu
-                                                        }
-                                                        aria-haspopup="true"
-                                                        aria-label="User menu"
-                                                        type="button"
+                                                        className="flex items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-accent transition-all active:scale-95 border border-border"
                                                     >
-                                                        <div className="relative p-0.5 overflow-hidden rounded-full liquid-glass">
-                                                            <img
-                                                                src={
-                                                                    user.avatar ||
-                                                                    defaultAvatar
-                                                                }
-                                                                alt={user.name}
-                                                                className="w-8 h-8 rounded-full object-cover"
-                                                                width={32}
-                                                                height={32}
-                                                            />
-                                                        </div>
-                                                        <div className="flex flex-col items-start flex-1 min-w-0">
-                                                            <span className="text-sm font-medium">
-                                                                {user.name}
-                                                            </span>
-                                                            {user.role ===
-                                                                'ADMIN' && (
-                                                                <span className="text-xs text-purple-400">
-                                                                    Quản trị
-                                                                    viên
-                                                                </span>
-                                                            )}
-                                                        </div>
+                                                        <span className="text-sm font-medium text-foreground flex-1 text-left">
+                                                            Cài đặt tài khoản
+                                                        </span>
                                                         {openUserMenu ? (
-                                                            <FaCaretDown
-                                                                className="flex-shrink-0 ml-2"
+                                                            <FaCaretUp
+                                                                className="flex-shrink-0 text-muted-foreground"
                                                                 size={15}
                                                             />
                                                         ) : (
-                                                            <FaCaretUp
-                                                                className="flex-shrink-0 ml-2"
+                                                            <FaCaretDown
+                                                                className="flex-shrink-0 text-muted-foreground"
                                                                 size={15}
                                                             />
                                                         )}
@@ -561,7 +616,11 @@ export default function Header() {
                                                         closeMobileMenu();
                                                         scrollToTop();
                                                     }}
-                                                    className="w-full bg-lime-400 text-black font-medium rounded-lg px-6 py-2.5 hover:bg-lime-300 hover:shadow-md hover:scale-[1.02] transition-all"
+                                                    className="w-full text-white font-medium rounded-lg px-6 py-2.5 hover:shadow-lg hover:scale-[1.02] transition-all active:scale-95"
+                                                    style={{
+                                                        background: 'linear-gradient(135deg, #C96048 0%, #d97a66 100%)',
+                                                        boxShadow: '0 4px 12px rgba(201, 96, 72, 0.3)',
+                                                    }}
                                                 >
                                                     Đăng nhập
                                                 </button>

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Axios from '../../utils/Axios';
 import SummaryApi from '../../common/SummaryApi';
+import { useSelector } from 'react-redux';
+import { valideURLConvert } from '@/utils/valideURLConvert';
+import { Button } from '../ui/button';
 
 // Tính số item hiển thị theo chiều rộng màn hình
 const useItemsPerPage = () => {
@@ -86,9 +89,27 @@ export const FeaturedDishes = () => {
         return 'Món ăn';
     };
 
+    const categoryData = useSelector((state) => state.product.allCategory);
+    const navigate = useNavigate();
+
+    const firstCategory = categoryData?.[0];
+
+    const handleRedirectProductListPage = (id, cat) => {
+        const url = `/${valideURLConvert(cat)}-${id}`;
+        navigate(url);
+    };
+
+    const handleExploreClick = () => {
+        handleRedirectProductListPage(firstCategory._id, firstCategory.name);
+    };
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     return (
         <section className="col-span-6">
-            <div className="mb-6 flex justify-between items-center">
+            <div className="mb-6 flex justify-between items-center gap-4">
                 <div>
                     <h3 className="text-3xl font-bold">Món ăn nổi bật</h3>
                     <p className="text-[#C96048] text-sm mt-1">
@@ -96,7 +117,7 @@ export const FeaturedDishes = () => {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center md:flex-row flex-col gap-4">
                     {/* Page indicator */}
                     {totalPages > 1 && (
                         <span className="text-[#C96048] text-sm font-semibold tracking-widest">
@@ -147,6 +168,17 @@ export const FeaturedDishes = () => {
                             </button>
                         </div>
                     )}
+
+                    <button
+                        onClick={() => {
+                            handleExploreClick();
+                            scrollToTop();
+                        }}
+                        className="section-badge inline-block whitespace-nowrap text-[10px] uppercase tracking-[.3em] text-orange-600 font-bold
+                        bg-[#C96048]/10 dark:bg-[#C96048]/20 px-4 py-1.5 rounded-full border border-[#C96048]/80 hover:bg-[#C96048] hover:text-white hover:border-[#C96048] transition-all duration-300"
+                    >
+                        Xem tất cả
+                    </button>
                 </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

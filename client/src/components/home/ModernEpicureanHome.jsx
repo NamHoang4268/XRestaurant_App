@@ -239,8 +239,7 @@ export const ModernEpicureanHome = () => {
 
             {/* Không set bg — để Plasma + body bg-background hiển thị qua */}
             <div className="eat-ease-home text-foreground">
-                <main className="py-24 container mx-auto">
-
+                <main className="px-4 md:px-4 lg:px-4 py-24 container mx-auto">
                     {/* ── Hero Editorial — luôn hiển thị, không cần reveal ── */}
                     <HeroEditorial />
 
@@ -256,14 +255,24 @@ export const ModernEpicureanHome = () => {
                     </ScrollRevealSection>
 
                     {/* ── Divider ── */}
-                    <ScrollRevealSection direction="zoom" delay={100} duration={600} className="mt-20">
+                    <ScrollRevealSection
+                        direction="zoom"
+                        delay={100}
+                        duration={600}
+                        className="mt-20"
+                    >
                         <div className="section-divider" />
                     </ScrollRevealSection>
 
                     {/* ── Why Choose Us — MagicBento section ── */}
                     <section className="mt-16">
                         {/* Heading block — fade từ dưới lên */}
-                        <ScrollRevealSection direction="fade-up" delay={0} duration={700} threshold={0.2}>
+                        <ScrollRevealSection
+                            direction="fade-up"
+                            delay={0}
+                            duration={700}
+                            threshold={0.2}
+                        >
                             <div className="mb-2 text-center">
                                 <span className="section-badge inline-block text-[10px] uppercase tracking-[.3em] text-orange-600 font-bold bg-[#C96048]/10 dark:bg-[#C96048]/20 px-4 py-1.5 rounded-full mb-4 border border-[#C96048]/80">
                                     Lý do lựa chọn
@@ -272,14 +281,20 @@ export const ModernEpicureanHome = () => {
                                     Tại sao chọn EatEase?
                                 </h2>
                                 <p className="mt-3 text-orange-500 font-bold text-sm max-w-lg mx-auto leading-relaxed">
-                                    Chúng tôi không chỉ phục vụ món ăn — chúng tôi
-                                    kiến tạo những trải nghiệm ẩm thực đáng nhớ.
+                                    Chúng tôi không chỉ phục vụ món ăn — chúng
+                                    tôi kiến tạo những trải nghiệm ẩm thực đáng
+                                    nhớ.
                                 </p>
                             </div>
                         </ScrollRevealSection>
 
                         {/* Bento Cards — flip vào với delay nhẹ hơn */}
-                        <ScrollRevealSection direction="flip" delay={120} duration={850} threshold={0.08}>
+                        <ScrollRevealSection
+                            direction="flip"
+                            delay={120}
+                            duration={850}
+                            threshold={0.08}
+                        >
                             <MagicBento
                                 cards={whyUsCards}
                                 glowColor="201, 96, 72"
@@ -293,7 +308,12 @@ export const ModernEpicureanHome = () => {
                     </section>
 
                     {/* ── Divider ── */}
-                    <ScrollRevealSection direction="zoom" delay={80} duration={600} className="mt-20">
+                    <ScrollRevealSection
+                        direction="zoom"
+                        delay={80}
+                        duration={600}
+                        className="mt-20"
+                    >
                         <div className="section-divider" />
                     </ScrollRevealSection>
 
@@ -311,7 +331,12 @@ export const ModernEpicureanHome = () => {
                     </ScrollRevealSection>
 
                     {/* ── Divider ── */}
-                    <ScrollRevealSection direction="zoom" delay={80} duration={600} className="mt-20">
+                    <ScrollRevealSection
+                        direction="zoom"
+                        delay={80}
+                        duration={600}
+                        className="mt-20"
+                    >
                         <div className="section-divider" />
                     </ScrollRevealSection>
 
@@ -337,11 +362,15 @@ export const ModernEpicureanHome = () => {
                             <Testimonial />
                         </ScrollRevealSection>
                     </div>
-
                 </main>
 
                 {/* ── Footer — slide lên từ dưới ── */}
-                <ScrollRevealSection direction="fade-up" delay={0} duration={700} threshold={0.05}>
+                <ScrollRevealSection
+                    direction="fade-up"
+                    delay={0}
+                    duration={700}
+                    threshold={0.05}
+                >
                     <EpicureanFooter />
                 </ScrollRevealSection>
             </div>
