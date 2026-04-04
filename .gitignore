@@ -33,4 +33,4 @@ client/.vite_cache
 .server/tests
 chat-history.md
 AGENT_RULES.md
-.kiro/*
+.kiro/
