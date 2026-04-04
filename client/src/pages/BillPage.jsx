@@ -55,7 +55,7 @@ const InvoicesTab = () => {
     const { allOrders: orders = [], loading } = useSelector((state) => state.orders);
     const user = useSelector((state) => state.user);
     const canAccessBills = ['ADMIN', 'WAITER', 'CASHIER'].includes(user?.role);
-    const canUpdateStatus = ['ADMIN', 'WAITER'].includes(user?.role);
+    const canUpdateStatus = [].includes(user?.role);
     const canPay = ['ADMIN', 'CASHIER'].includes(user?.role);
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -354,30 +354,7 @@ const InvoicesTab = () => {
                 </div>
             )}
 
-            {/* Update Status Modal */}
-            {openUpdateStatus && selectedOrder && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-                    <div className="bg-background rounded-lg shadow-xl w-full max-w-md overflow-hidden">
-                        <div className="p-4 border-b flex items-center justify-between">
-                            <h3 className="text-lg font-bold">Cập nhật trạng thái</h3>
-                            <button onClick={() => setOpenUpdateStatus(false)} className="text-gray-500 hover:text-red-500"><FaTimesCircle size={18} /></button>
-                        </div>
-                        <div className="p-4 space-y-4">
-                            <p className="text-sm text-gray-600">Đơn hàng: <span className="font-bold">{selectedOrder.orderId}</span></p>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Trạng thái mới</label>
-                                <select className="w-full border border-border rounded-md px-3 py-2 bg-background" value={newStatusProcess} onChange={e => setNewStatusProcess(e.target.value)}>
-                                    {['Chờ xử lý', 'Đang chuẩn bị', 'Đã phục vụ', 'Đang chờ thanh toán'].map(s => <option key={s} value={s}>{s}</option>)}
-                                </select>
-                            </div>
-                        </div>
-                        <div className="p-4 border-t flex justify-end gap-3">
-                            <button onClick={() => setOpenUpdateStatus(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Hủy</button>
-                            <button onClick={() => handleUpdateStatusGroup(selectedOrder, newStatusProcess)} disabled={isUpdatingSubStatus} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{isUpdatingSubStatus ? 'Đang xử lý...' : 'Cập nhật'}</button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            
 
             {/* Payment Confirm Modal */}
             {openPaymentConfirm && selectedOrder && (
