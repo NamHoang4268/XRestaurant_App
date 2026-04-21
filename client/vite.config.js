@@ -13,6 +13,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  define: {
+    'global': 'globalThis',
+  },
   cacheDir: path.resolve(__dirname, '.vite_cache'),
   server: {
     fs: {

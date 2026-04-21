@@ -1,0 +1,581 @@
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config();
+import cookieParser from "cookie-parser";
+import morgan from "morgan";
+import helmet from "helmet";
+import { simpleAuth, requireAdmin, getUserInfo } from './middleware/simple-auth.js';
+import { listImages, listDocuments, getDocumentSignedUrl, getImageUrl } from './routes/s3-media.js';
+
+const app = express();
+
+// CORS
+const getAllowedOrigins = () => {
+    const raw = process.env.FRONTEND_URL || 'http://localhost:5173';
+    return raw.split(',').map((u) => u.trim()).filter(Boolean);
+};
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        const allowed = getAllowedOrigins();
+        if (!origin || allowed.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.warn('[CORS] Blocked origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-username', 'x-password'],
+};
+
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(cookieParser());
+app.use(morgan('dev'));
+app.use(helmet({ crossOriginResourcePolicy: false }));
+
+const PORT = process.env.PORT || 8080;
+
+// ============================================
+// MOCK DATA
+// ============================================
+
+const MOCK_CATEGORIES = [
+    { id: 1, name: 'Appetizers', description: 'Món khai vị' },
+    { id: 2, name: 'Main Course', description: 'Món chính' },
+    { id: 3, name: 'Desserts', description: 'Món tráng miệng' },
+    { id: 4, name: 'Beverages', description: 'Đồ uống' },
+    { id: 5, name: 'Specials', description: 'Món đặc biệt' }
+];
+
+const MOCK_PRODUCTS = [
+    { id: 1, name: 'Spring Rolls', description: 'Chả giò giòn rụm', price: 50000, category_id: 1, category_name: 'Appetizers', image_url: 'https://xrestaurant-media-905418484418.s3.ap-southeast-1.amazonaws.com/spring-rolls.jpg' },
+    { id: 2, name: 'Pho Bo', description: 'Phở bò truyền thống', price: 80000, category_id: 2, category_name: 'Main Course', image_url: 'https://xrestaurant-media-905418484418.s3.ap-southeast-1.amazonaws.com/pho-bo.jpg' },
+    { id: 3, name: 'Banh Mi', description: 'Bánh mì Việt Nam', price: 35000, category_id: 2, category_name: 'Main Course', image_url: 'https://via.placeholder.com/300/45B7D1/FFFFFF?text=Banh+Mi' },
+    { id: 4, name: 'Che Ba Mau', description: 'Chè ba màu', price: 30000, category_id: 3, category_name: 'Desserts', image_url: 'https://via.placeholder.com/300/FFA07A/FFFFFF?text=Che+Ba+Mau' },
+    { id: 5, name: 'Ca Phe Sua Da', description: 'Cà phê sữa đá', price: 25000, category_id: 4, category_name: 'Beverages', image_url: 'https://via.placeholder.com/300/96CEB4/FFFFFF?text=Coffee' },
+    { id: 6, name: 'Goi Cuon', description: 'Gỏi cuốn tôm thịt', price: 45000, category_id: 1, category_name: 'Appetizers', image_url: 'https://via.placeholder.com/300/FFEAA7/333333?text=Goi+Cuon' },
+    { id: 7, name: 'Com Tam', description: 'Cơm tấm sườn bì chả', price: 55000, category_id: 2, category_name: 'Main Course', image_url: 'https://via.placeholder.com/300/DFE6E9/333333?text=Com+Tam' },
+    { id: 8, name: 'Bun Cha', description: 'Bún chả Hà Nội', price: 60000, category_id: 2, category_name: 'Main Course', image_url: 'https://via.placeholder.com/300/74B9FF/FFFFFF?text=Bun+Cha' }
+];
+
+const MOCK_TABLES = [
+    { id: 1, table_number: 1, capacity: 4, status: 'available' },
+    { id: 2, table_number: 2, capacity: 4, status: 'occupied' },
+    { id: 3, table_number: 3, capacity: 6, status: 'available' },
+    { id: 4, table_number: 4, capacity: 2, status: 'available' },
+    { id: 5, table_number: 5, capacity: 8, status: 'reserved' }
+];
+
+const MOCK_ORDERS = [
+    { 
+        id: 1, 
+        table_id: 2, 
+        table_number: 2,
+        user_id: 1, 
+        username: 'admin',
+        status: 'pending', 
+        total_amount: 165000, 
+        notes: 'No onions',
+        created_at: new Date('2026-04-17T10:30:00'),
+        updated_at: new Date('2026-04-17T10:30:00')
+    },
+    { 
+        id: 2, 
+        table_id: 5, 
+        table_number: 5,
+        user_id: 1, 
+        username: 'admin',
+        status: 'completed', 
+        total_amount: 250000, 
+        notes: '',
+        created_at: new Date('2026-04-17T09:15:00'),
+        updated_at: new Date('2026-04-17T10:00:00')
+    }
+];
+
+// ============================================
+// PUBLIC ROUTES (No Auth Required)
+// ============================================
+
+// Root
+app.get("/", (req, res) => {
+    res.json({ 
+        message: "XRestaurant Server - S3 Demo with Mock Data",
+        version: "1.0.0-s3-mock",
+        mode: "mock data + s3",
+        database: "Mock (no DB required)",
+        storage: "S3 (media + documents)",
+        authentication: "Simple Auth (user1/user2)"
+    });
+});
+
+// Health check
+app.get("/health", (req, res) => {
+    res.json({ 
+        status: "healthy", 
+        service: "xrestaurant-backend",
+        database: "mock",
+        uptime: process.uptime(),
+        authentication: "enabled",
+        s3: "enabled"
+    });
+});
+
+// ============================================
+// APPLY AUTHENTICATION MIDDLEWARE
+// ============================================
+// Skip auth for specific GET endpoints (for demo)
+app.use((req, res, next) => {
+    const publicEndpoints = [
+        '/health',
+        '/',
+        '/api/category/get-category',
+        '/api/sub-category/get-sub-category',
+        '/api/product/get-product'
+    ];
+    
+    if (publicEndpoints.includes(req.path)) {
+        // Set default user for public endpoints
+        req.user = {
+            username: 'guest',
+            role: 'viewer',
+            permissions: ['READ']
+        };
+        return next();
+    }
+    
+    // Apply auth for other endpoints
+    simpleAuth(req, res, next);
+});
+
+// ============================================
+// S3 MEDIA ROUTES
+// ============================================
+
+// List all images (READ permission)
+app.get("/api/s3/images", listImages);
+
+// Get image URL by key (READ permission)
+app.get("/api/s3/images/:key", getImageUrl);
+
+// List all documents (READ permission)
+app.get("/api/s3/documents", listDocuments);
+
+// Get signed URL for document download (READ permission)
+app.get("/api/s3/documents/:key/download", getDocumentSignedUrl);
+
+// ============================================
+// MOCK DATA ROUTES
+// ============================================
+
+// Get current user info
+app.get("/api/me", getUserInfo);
+
+// Categories (READ - mock data)
+app.get("/api/categories", (req, res) => {
+    res.json({
+        success: true,
+        user: req.user.username,
+        role: req.user.role,
+        data: MOCK_CATEGORIES,
+        note: "Mock data - no database"
+    });
+});
+
+// Category routes (for compatibility with frontend)
+app.get("/api/category/get-category", (req, res) => {
+    res.json({
+        success: true,
+        user: req.user.username,
+        role: req.user.role,
+        data: MOCK_CATEGORIES,
+        note: "Mock data - no database"
+    });
+});
+
+app.post("/api/category/add-category", (req, res) => {
+    const { name, description } = req.body;
+    const newCategory = {
+        id: MOCK_CATEGORIES.length + 1,
+        name,
+        description
+    };
+    MOCK_CATEGORIES.push(newCategory);
+    
+    res.json({
+        success: true,
+        message: "Category created (mock)",
+        user: req.user.username,
+        role: req.user.role,
+        data: newCategory,
+        note: "Mock data - not persisted"
+    });
+});
+
+app.put("/api/category/update-category", (req, res) => {
+    res.json({
+        success: true,
+        message: "Category updated (mock)",
+        user: req.user.username,
+        role: req.user.role,
+        note: "Mock data - not persisted"
+    });
+});
+
+app.delete("/api/category/delete-category", (req, res) => {
+    res.json({
+        success: true,
+        message: "Category deleted (mock)",
+        user: req.user.username,
+        role: req.user.role,
+        note: "Mock data - not persisted"
+    });
+});
+
+// Sub-categories (READ - mock data)
+app.get("/api/sub-categories", (req, res) => {
+    res.json({
+        success: true,
+        user: req.user.username,
+        role: req.user.role,
+        data: [],
+        note: "Mock data - no sub-categories"
+    });
+});
+
+// Sub-category routes (for compatibility with frontend)
+app.get("/api/sub-category/get-sub-category", (req, res) => {
+    res.json({
+        success: true,
+        user: req.user.username,
+        role: req.user.role,
+        data: [],
+        note: "Mock data - no sub-categories"
+    });
+});
+
+app.post("/api/sub-category/add-sub-category", (req, res) => {
+    res.json({
+        success: true,
+        message: "Sub-category created (mock)",
+        user: req.user.username,
+        role: req.user.role,
+        note: "Mock data - not persisted"
+    });
+});
+
+app.put("/api/sub-category/update-sub-category", (req, res) => {
+    res.json({
+        success: true,
+        message: "Sub-category updated (mock)",
+        user: req.user.username,
+        role: req.user.role,
+        note: "Mock data - not persisted"
+    });
+});
+
+app.delete("/api/sub-category/delete-sub-category", (req, res) => {
+    res.json({
+        success: true,
+        message: "Sub-category deleted (mock)",
+        user: req.user.username,
+        role: req.user.role,
+        note: "Mock data - not persisted"
+    });
+});
+
+// Products (READ - mock data)
+app.get("/api/products", (req, res) => {
+    res.json({
+        success: true,
+        user: req.user.username,
+        role: req.user.role,
+        data: MOCK_PRODUCTS,
+        note: "Mock data - no database"
+    });
+});
+
+// Product routes (for compatibility with frontend)
+app.get("/api/product/get-product", (req, res) => {
+    res.json({
+        success: true,
+        user: req.user.username,
+        role: req.user.role,
+        data: MOCK_PRODUCTS,
+        note: "Mock data - no database"
+    });
+});
+
+// POST version (frontend might use POST instead of GET)
+app.post("/api/product/get-product", (req, res) => {
+    res.json({
+        success: true,
+        user: req.user.username,
+        role: req.user.role,
+        data: MOCK_PRODUCTS,
+        note: "Mock data - no database"
+    });
+});
+
+app.post("/api/product/add-product", (req, res) => {
+    const { name, description, price, category_id, image_url } = req.body;
+    
+    const newProduct = {
+        id: MOCK_PRODUCTS.length + 1,
+        name,
+        description,
+        price,
+        category_id,
+        category_name: MOCK_CATEGORIES.find(c => c.id === category_id)?.name || 'Unknown',
+        image_url: image_url || 'https://via.placeholder.com/300'
+    };
+    
+    MOCK_PRODUCTS.push(newProduct);
+    
+    res.json({
+        success: true,
+        message: 'Product created successfully (mock)',
+        user: req.user.username,
+        role: req.user.role,
+        data: newProduct,
+        note: "Mock data - not persisted"
+    });
+});
+
+app.put("/api/product/update-product", (req, res) => {
+    res.json({
+        success: true,
+        message: "Product updated (mock)",
+        user: req.user.username,
+        role: req.user.role,
+        note: "Mock data - not persisted"
+    });
+});
+
+app.delete("/api/product/delete-product", (req, res) => {
+    res.json({
+        success: true,
+        message: "Product deleted (mock)",
+        user: req.user.username,
+        role: req.user.role,
+        note: "Mock data - not persisted"
+    });
+});
+
+// Get product by ID (READ - mock data)
+app.get("/api/products/:id", (req, res) => {
+    const { id } = req.params;
+    const product = MOCK_PRODUCTS.find(p => p.id === parseInt(id));
+    
+    if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+    }
+    
+    res.json({
+        success: true,
+        user: req.user.username,
+        role: req.user.role,
+        data: product,
+        note: "Mock data - no database"
+    });
+});
+
+// Tables (READ - mock data)
+app.get("/api/tables", (req, res) => {
+    res.json({
+        success: true,
+        user: req.user.username,
+        role: req.user.role,
+        data: MOCK_TABLES,
+        note: "Mock data - no database"
+    });
+});
+
+// Orders (READ - mock data)
+app.get("/api/orders", (req, res) => {
+    res.json({
+        success: true,
+        user: req.user.username,
+        role: req.user.role,
+        data: MOCK_ORDERS,
+        note: "Mock data - no database"
+    });
+});
+
+// Create Order (WRITE - chỉ user2 - mock)
+app.post("/api/orders", (req, res) => {
+    const { table_id, items, notes } = req.body;
+    
+    const newOrder = {
+        id: MOCK_ORDERS.length + 1,
+        table_id: table_id,
+        table_number: table_id,
+        user_id: 1,
+        username: req.user.username,
+        status: 'pending',
+        total_amount: items.reduce((sum, item) => {
+            const product = MOCK_PRODUCTS.find(p => p.id === item.product_id);
+            return sum + (product ? product.price * item.quantity : 0);
+        }, 0),
+        notes: notes || '',
+        created_at: new Date(),
+        updated_at: new Date()
+    };
+    
+    MOCK_ORDERS.push(newOrder);
+    
+    res.json({
+        success: true,
+        message: 'Order created successfully (mock)',
+        user: req.user.username,
+        role: req.user.role,
+        order_id: newOrder.id,
+        total_amount: newOrder.total_amount,
+        note: "Mock data - not persisted"
+    });
+});
+
+// Update Order Status (WRITE - chỉ user2 - mock)
+app.patch("/api/orders/:id/status", (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    const order = MOCK_ORDERS.find(o => o.id === parseInt(id));
+    
+    if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+    }
+    
+    order.status = status;
+    order.updated_at = new Date();
+    
+    res.json({
+        success: true,
+        message: 'Order status updated (mock)',
+        user: req.user.username,
+        role: req.user.role,
+        data: order,
+        note: "Mock data - not persisted"
+    });
+});
+
+// Delete Order (DELETE - chỉ user2 - mock)
+app.delete("/api/orders/:id", (req, res) => {
+    const { id } = req.params;
+    const index = MOCK_ORDERS.findIndex(o => o.id === parseInt(id));
+    
+    if (index === -1) {
+        return res.status(404).json({ error: 'Order not found' });
+    }
+    
+    MOCK_ORDERS.splice(index, 1);
+    
+    res.json({
+        success: true,
+        message: 'Order deleted successfully (mock)',
+        user: req.user.username,
+        role: req.user.role,
+        deleted_order_id: id,
+        note: "Mock data - not persisted"
+    });
+});
+
+// Create Product (WRITE - chỉ user2 - mock)
+app.post("/api/products", (req, res) => {
+    const { name, description, price, category_id, image_url } = req.body;
+    
+    const newProduct = {
+        id: MOCK_PRODUCTS.length + 1,
+        name,
+        description,
+        price,
+        category_id,
+        category_name: MOCK_CATEGORIES.find(c => c.id === category_id)?.name || 'Unknown',
+        image_url: image_url || 'https://via.placeholder.com/300'
+    };
+    
+    MOCK_PRODUCTS.push(newProduct);
+    
+    res.json({
+        success: true,
+        message: 'Product created successfully (mock)',
+        user: req.user.username,
+        role: req.user.role,
+        data: newProduct,
+        note: "Mock data - not persisted"
+    });
+});
+
+// Update Product (WRITE - chỉ user2 - mock)
+app.put("/api/products/:id", (req, res) => {
+    const { id } = req.params;
+    const { name, description, price, category_id, image_url } = req.body;
+    
+    const product = MOCK_PRODUCTS.find(p => p.id === parseInt(id));
+    
+    if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+    }
+    
+    product.name = name;
+    product.description = description;
+    product.price = price;
+    product.category_id = category_id;
+    product.category_name = MOCK_CATEGORIES.find(c => c.id === category_id)?.name || 'Unknown';
+    product.image_url = image_url;
+    
+    res.json({
+        success: true,
+        message: 'Product updated successfully (mock)',
+        user: req.user.username,
+        role: req.user.role,
+        data: product,
+        note: "Mock data - not persisted"
+    });
+});
+
+// Delete Product (DELETE - chỉ user2 - mock)
+app.delete("/api/products/:id", (req, res) => {
+    const { id } = req.params;
+    const index = MOCK_PRODUCTS.findIndex(p => p.id === parseInt(id));
+    
+    if (index === -1) {
+        return res.status(404).json({ error: 'Product not found' });
+    }
+    
+    MOCK_PRODUCTS.splice(index, 1);
+    
+    res.json({
+        success: true,
+        message: 'Product deleted successfully (mock)',
+        user: req.user.username,
+        role: req.user.role,
+        deleted_product_id: id,
+        note: "Mock data - not persisted"
+    });
+});
+
+// ============================================
+// 404 Handler
+// ============================================
+app.use((req, res) => {
+    res.status(404).json({ 
+        error: "Not Found",
+        path: req.path,
+        method: req.method
+    });
+});
+
+// ============================================
+// Start Server
+// ============================================
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🔐 Authentication: Enabled`);
+    console.log(`📊 Database: Mock Data (no DB required)`);
+    console.log(`📦 S3: Media + Documents`);
+});

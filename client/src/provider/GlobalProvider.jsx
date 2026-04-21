@@ -1,4 +1,5 @@
 import React, { createContext, useContext } from 'react';
+import { AuthProvider } from '../contexts/AuthContext';
 
 export const GlobalContext = createContext(null);
 
@@ -8,21 +9,23 @@ export const useGlobalContext = () => useContext(GlobalContext);
 // Chỉ giữ context stubs cho các legacy components không bị xóa kịp
 const GlobalProvider = ({ children }) => {
     return (
-        <GlobalContext.Provider
-            value={{
-                // Stubs – legacy components có thể vẫn reference những này
-                totalPrice: 0,
-                totalQty: 0,
-                notDiscountTotalPrice: 0,
-                fetchCartItem: () => {},
-                updateCartItem: () => {},
-                deleteCartItem: () => {},
-                reloadAfterPayment: () => {},
-                fetchOrder: () => {},
-            }}
-        >
-            {children}
-        </GlobalContext.Provider>
+        <AuthProvider>
+            <GlobalContext.Provider
+                value={{
+                    // Stubs – legacy components có thể vẫn reference những này
+                    totalPrice: 0,
+                    totalQty: 0,
+                    notDiscountTotalPrice: 0,
+                    fetchCartItem: () => {},
+                    updateCartItem: () => {},
+                    deleteCartItem: () => {},
+                    reloadAfterPayment: () => {},
+                    fetchOrder: () => {},
+                }}
+            >
+                {children}
+            </GlobalContext.Provider>
+        </AuthProvider>
     );
 };
 

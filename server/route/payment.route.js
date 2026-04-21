@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import auth from '../middleware/auth.js';
+import verifyCognitoToken from '../middleware/verifyCognitoToken.js';
 import {
     markAsPaid,
     createStripeSession,
@@ -15,10 +15,10 @@ const paymentRouter = Router();
 paymentRouter.post('/stripe/webhook', handleStripeWebhook);
 
 // Protected endpoints
-paymentRouter.post('/mark-paid', auth, markAsPaid);
-paymentRouter.post('/stripe/create-session', auth, createStripeSession);
-paymentRouter.get('/:paymentId', auth, getPaymentDetails);
-paymentRouter.post('/refund', auth, processRefund);
-paymentRouter.post('/generate-receipt', auth, generateReceipt);
+paymentRouter.post('/mark-paid', verifyCognitoToken, markAsPaid);
+paymentRouter.post('/stripe/create-session', verifyCognitoToken, createStripeSession);
+paymentRouter.get('/:paymentId', verifyCognitoToken, getPaymentDetails);
+paymentRouter.post('/refund', verifyCognitoToken, processRefund);
+paymentRouter.post('/generate-receipt', verifyCognitoToken, generateReceipt);
 
 export default paymentRouter;

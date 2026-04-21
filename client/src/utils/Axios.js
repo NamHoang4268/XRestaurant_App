@@ -1,5 +1,6 @@
 import axios from "axios";
-import SummaryApi, { baseURL } from "../common/SummaryApi";
+import { baseURL } from "../common/SummaryApi";
+import cognitoService from "../services/cognitoService";
 
 let isLoggingOut = false;
 
@@ -14,19 +15,19 @@ const Axios = axios.create({
     withCredentials: true, // gửi cookie nếu có
 });
 
-// Request interceptor
+// Request interceptor - inject idToken instead of accesstoken
 Axios.interceptors.request.use(
     (config) => {
-        const accessToken = localStorage.getItem("accesstoken");
-        if (accessToken) {
-            config.headers.Authorization = `Bearer ${accessToken}`;
+        const idToken = localStorage.getItem("idToken");
+        if (idToken) {
+            config.headers.Authorization = `Bearer ${idToken}`;
         }
         return config;
     },
     (error) => Promise.reject(error)
 );
 
-// Response interceptor
+// Response interceptor - handle token refresh with Cognito
 Axios.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -42,18 +43,22 @@ Axios.interceptors.response.use(
             try {
                 const refreshToken = localStorage.getItem("refreshToken");
                 if (refreshToken) {
-                    const newAccessToken = await refreshAccessToken(refreshToken);
-                    if (newAccessToken) {
-                        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                    // Use Cognito refresh instead of custom endpoint
+                    const tokens = await cognitoService.refreshSession(refreshToken);
+                    
+                    if (tokens && tokens.idToken) {
+                        // Update request with new token
+                        originalRequest.headers.Authorization = `Bearer ${tokens.idToken}`;
                         return Axios(originalRequest);
                     }
                 }
             } catch (refreshError) {
-                console.error("Refresh token failed:", refreshError);
+                console.error("Token refresh failed:", refreshError);
             }
 
-            // Refresh fail → clear token và redirect login (chỉ 1 lần)
-            localStorage.removeItem("accesstoken");
+            // Refresh failed - clear and redirect
+            localStorage.removeItem("idToken");
+            localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
 
             // Kiểm tra nếu chưa ở trang login VÀ không phải trang Home thì mới redirect
@@ -65,27 +70,5 @@ Axios.interceptors.response.use(
         return Promise.reject(error);
     }
 );
-
-// Hàm refresh token
-const refreshAccessToken = async (refreshToken) => {
-    try {
-        const response = await axios({
-            ...SummaryApi.refresh_token,
-            baseURL: baseURL, // Add baseURL here
-            headers: {
-                Authorization: `Bearer ${refreshToken}`,
-            },
-        });
-
-        const accessToken = response.data?.data?.accessToken;
-        if (accessToken) {
-            localStorage.setItem("accesstoken", accessToken);
-        }
-        return accessToken;
-    } catch (error) {
-        console.error("Error refreshing token:", error);
-        return null;
-    }
-};
 
 export default Axios;

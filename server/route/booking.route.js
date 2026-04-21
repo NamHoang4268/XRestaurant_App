@@ -1,5 +1,5 @@
 import { Router } from "express";
-import auth from "../middleware/auth.js";
+import verifyCognitoToken from "../middleware/verifyCognitoToken.js";
 import {
     createBookingController,
     getAllBookingsController,
@@ -16,17 +16,17 @@ import {
 const bookingRouter = Router();
 
 bookingRouter.post('/create', createBookingController);
-bookingRouter.get('/get-all', auth, getAllBookingsController);
+bookingRouter.get('/get-all', verifyCognitoToken, getAllBookingsController);
 bookingRouter.get('/get/:id', getBookingByIdController);
-bookingRouter.put('/update', auth, updateBookingController);
+bookingRouter.put('/update', verifyCognitoToken, updateBookingController);
 bookingRouter.delete('/cancel', cancelBookingController);
-bookingRouter.patch('/confirm', auth, confirmBookingController);
+bookingRouter.patch('/confirm', verifyCognitoToken, confirmBookingController);
 bookingRouter.post('/available-tables', getAvailableTablesForBookingController);
 bookingRouter.post('/customer-bookings', getCustomerBookingsController);
 bookingRouter.post('/create-payment-session', createBookingPaymentSession);
 
 
 // Report route
-bookingRouter.get('/report', auth, getBookingReportData);
+bookingRouter.get('/report', verifyCognitoToken, getBookingReportData);
 
 export default bookingRouter;

@@ -1,5 +1,5 @@
 import express from 'express';
-import auth from '../middleware/auth.js';
+import verifyCognitoToken from '../middleware/verifyCognitoToken.js';
 import {
     callWaiter,
     getPendingRequests,
@@ -9,12 +9,12 @@ import {
 const serviceRequestRouter = express.Router();
 
 // Khách bàn gọi phục vụ
-serviceRequestRouter.post('/call', auth, callWaiter);
+serviceRequestRouter.post('/call', verifyCognitoToken, callWaiter);
 
 // Waiter xem danh sách pending
-serviceRequestRouter.get('/pending', auth, getPendingRequests);
+serviceRequestRouter.get('/pending', verifyCognitoToken, getPendingRequests);
 
 // Waiter cập nhật trạng thái
-serviceRequestRouter.patch('/:id/handle', auth, handleRequest);
+serviceRequestRouter.patch('/:id/handle', verifyCognitoToken, handleRequest);
 
 export default serviceRequestRouter;

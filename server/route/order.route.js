@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import auth from '../middleware/auth.js';
+import verifyCognitoToken from '../middleware/verifyCognitoToken.js';
 import { getAllOrders, updateOrderStatus } from '../controllers/order.controller.js';
 
 const orderRouter = Router();
 
 // Re-enabled for BillPage
-orderRouter.get('/all-orders', auth, getAllOrders);
-orderRouter.put('/update-status/:orderId', auth, updateOrderStatus);
+orderRouter.get('/all-orders', verifyCognitoToken, getAllOrders);
+orderRouter.put('/update-status/:orderId', verifyCognitoToken, updateOrderStatus);
 
 // Endpoint thông báo chuyển hướng cho các route cũ khác nếu có
 orderRouter.use((req, res) => {

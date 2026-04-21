@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import auth from '../middleware/auth.js';
+import verifyCognitoToken from '../middleware/verifyCognitoToken.js';
 import {
     addItemsToTableOrder,
     getCurrentTableOrder,
@@ -15,23 +15,23 @@ import {
 
 const tableOrderRouter = Router();
 
-tableOrderRouter.post('/add-items', auth, addItemsToTableOrder);
-tableOrderRouter.get('/current', auth, getCurrentTableOrder);
-tableOrderRouter.post('/checkout', auth, checkoutTableOrder);
-tableOrderRouter.post('/cancel', auth, cancelTableOrder);
-tableOrderRouter.get('/all-active', auth, getAllActiveTableOrders);
+tableOrderRouter.post('/add-items', verifyCognitoToken, addItemsToTableOrder);
+tableOrderRouter.get('/current', verifyCognitoToken, getCurrentTableOrder);
+tableOrderRouter.post('/checkout', verifyCognitoToken, checkoutTableOrder);
+tableOrderRouter.post('/cancel', verifyCognitoToken, cancelTableOrder);
+tableOrderRouter.get('/all-active', verifyCognitoToken, getAllActiveTableOrders);
 
 // Cashier payment routes
-tableOrderRouter.get('/cashier-pending', auth, getCashierPendingOrders);
-tableOrderRouter.post('/cashier-confirm', auth, confirmCashierPayment);
+tableOrderRouter.get('/cashier-pending', verifyCognitoToken, getCashierPendingOrders);
+tableOrderRouter.post('/cashier-confirm', verifyCognitoToken, confirmCashierPayment);
 
 // Waiter cancel item
-tableOrderRouter.delete('/item/:orderId/:itemId', auth, cancelTableOrderItem);
+tableOrderRouter.delete('/item/:orderId/:itemId', verifyCognitoToken, cancelTableOrderItem);
 
 // US26 – Stripe webhook (no auth – Stripe calls this directly; raw body handled in index.js)
 tableOrderRouter.post('/stripe-webhook', handleStripeWebhook);
 
 // US26 – Verify stripe session (for success page)
-tableOrderRouter.get('/verify-stripe-session', auth, verifyStripeSession);
+tableOrderRouter.get('/verify-stripe-session', verifyCognitoToken, verifyStripeSession);
 
 export default tableOrderRouter;

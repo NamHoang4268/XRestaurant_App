@@ -6,19 +6,14 @@ import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import GlareHover from '../GlareHover';
-import { FaFacebookSquare } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import Axios from '@/utils/Axios';
-import SummaryApi from '@/common/SummaryApi';
+import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
-import fetchUserDetails from '@/utils/fetchUserDetails';
-import { setUserDetails } from '@/store/userSlice';
-import AxiosToastError from '@/utils/AxiosToastError';
 import Loading from '../Loading';
-import { useGoogleLogin } from '@react-oauth/google';
 import { FaGoogle } from 'react-icons/fa';
 import { getRoleHomePath } from '@/utils/routePermissions';
+import { useAuth } from '@/contexts/AuthContext';
+import cognitoService from '@/services/cognitoService';
 
 export function LoginForm({
     className,
@@ -30,7 +25,8 @@ export function LoginForm({
     });
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const { login, loginWithGoogle } = useAuth();
+    const userRole = useSelector((state: any) => state.user.role);
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -89,76 +85,36 @@ export function LoginForm({
 
         try {
             setLoading(true);
-            const response = await Axios({ ...SummaryApi.login, data });
-
-            if (response.data.error) {
-                toast.error(response.data.message);
-            }
-
-            if (response.data.success) {
-                toast.success(response.data.message);
-                localStorage.setItem(
-                    'accesstoken',
-                    response.data.data.accessToken
-                );
-                localStorage.setItem(
-                    'refreshToken',
-                    response.data.data.refreshToken
-                );
-
-                const userDetails = await fetchUserDetails();
-                dispatch(setUserDetails(userDetails.data));
-                setData({ email: '', password: '' });
-                navigate(getRoleHomePath(userDetails.data?.role));
-            }
+            
+            // Use Cognito authentication
+            await login(data.email, data.password);
+            
+            toast.success('Đăng nhập thành công');
+            setData({ email: '', password: '' });
+            
+            // Navigate to role-based home page
+            navigate(getRoleHomePath(userRole));
         } catch (error) {
-            AxiosToastError(error);
+            console.error('Login error:', error);
+            
+            // Map Cognito error to Vietnamese message
+            const errorMessage = cognitoService.mapCognitoError(error);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }
     };
 
-    // Google OAuth — dùng useGoogleLogin (implicit flow) + custom button
-    const googleLogin = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
-            try {
-                setGoogleLoading(true);
-                const response = await Axios({
-                    ...SummaryApi.google_login,
-                    data: { accessToken: tokenResponse.access_token },
-                });
-
-                if (response.data.error) {
-                    toast.error(response.data.message);
-                    return;
-                }
-
-                if (response.data.success) {
-                    toast.success(response.data.message);
-                    localStorage.setItem(
-                        'accesstoken',
-                        response.data.data.accessToken
-                    );
-                    localStorage.setItem(
-                        'refreshToken',
-                        response.data.data.refreshToken
-                    );
-                    const userDetails = await fetchUserDetails();
-                    dispatch(setUserDetails(userDetails.data));
-                    navigate(getRoleHomePath(userDetails.data?.role));
-                }
-            } catch (error) {
-                AxiosToastError(error);
-            } finally {
-                setGoogleLoading(false);
-            }
-        },
-        onError: () => {
+    const handleGoogleLogin = () => {
+        try {
+            setGoogleLoading(true);
+            loginWithGoogle();
+        } catch (error) {
+            console.error('Google login error:', error);
             toast.error('Đăng nhập Google thất bại. Vui lòng thử lại.');
             setGoogleLoading(false);
-        },
-        flow: 'implicit',
-    });
+        }
+    };
 
     return (
         <form
@@ -262,15 +218,12 @@ export function LoginForm({
                     </div>
 
                     <div className="text-foreground">
-                        {/* Google — custom button */}
+                        {/* Google — Cognito Hosted UI */}
                         <Button
                             type="button"
                             variant="outline"
                             className="w-full flex items-center justify-center gap-2 h-12 border-muted-foreground border-2 rounded-lg shadow-none cursor-pointer"
-                            onClick={() => {
-                                setGoogleLoading(true);
-                                googleLogin();
-                            }}
+                            onClick={handleGoogleLogin}
                             disabled={googleLoading}
                         >
                             {googleLoading ? (

@@ -3,7 +3,7 @@ import SupportChat from "../models/supportChat.model.js";
 // ─── Customer: lấy conversation đang mở (hoặc đã đóng còn trong TTL) của mình ──
 export async function getMyConversation(req, res) {
     try {
-        const customerId = req.userId; // lấy từ auth middleware
+        const customerId = req.user.userId; // Cognito middleware
         if (!customerId) {
             return res.status(401).json({ success: false, message: "Chưa đăng nhập", error: true });
         }

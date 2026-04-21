@@ -1,5 +1,5 @@
 import { Router } from "express";
-import auth from "../middleware/auth.js";
+import verifyCognitoToken from "../middleware/verifyCognitoToken.js";
 import {
     addCategoryController,
     deleteCategoryController,
@@ -12,14 +12,14 @@ import {
 
 const categoryRouter = Router()
 
-categoryRouter.post('/add-category', auth, addCategoryController)
+categoryRouter.post('/add-category', verifyCognitoToken, addCategoryController)
 categoryRouter.get('/get-category', getCategoryController)
-categoryRouter.put('/update-category', auth, updateCategoryController)
-categoryRouter.delete('/delete-category', auth, deleteCategoryController)
+categoryRouter.put('/update-category', verifyCognitoToken, updateCategoryController)
+categoryRouter.delete('/delete-category', verifyCognitoToken, deleteCategoryController)
 
 // New routes for soft delete functionality
-categoryRouter.get('/get-deleted-categories', auth, getDeletedCategoriesController)
-categoryRouter.put('/restore-category', auth, restoreCategoryController)
-categoryRouter.delete('/hard-delete-category', auth, hardDeleteCategoryController)
+categoryRouter.get('/get-deleted-categories', verifyCognitoToken, getDeletedCategoriesController)
+categoryRouter.put('/restore-category', verifyCognitoToken, restoreCategoryController)
+categoryRouter.delete('/hard-delete-category', verifyCognitoToken, hardDeleteCategoryController)
 
 export default categoryRouter

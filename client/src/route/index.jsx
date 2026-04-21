@@ -9,6 +9,7 @@ import VerifyEmail from '../pages/VerifyEmail';
 import ForgotPassword from '../pages/ForgotPassword';
 import OtpVerification from '../pages/OtpVerification';
 import ResetPassword from '../pages/ResetPassword';
+import OAuthCallback from '../pages/OAuthCallback';
 import UserMenuMobile from '../pages/UserMenuMobile';
 import Profile from '../pages/Profile';
 import CategoryPage from './../pages/CategoryPage';
@@ -142,6 +143,10 @@ const router = createBrowserRouter([
                 ),
             },
             { path: 'reset-password', element: <ResetPassword /> },
+            
+            // === OAUTH CALLBACK ===
+            { path: 'oauth/callback', element: <OAuthCallback /> },
+            
             { path: 'user', element: <UserMenuMobile /> },
 
             // === ADMIN DASHBOARD ===

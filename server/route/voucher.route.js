@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import auth from '../middleware/auth.js';
+import verifyCognitoToken from '../middleware/verifyCognitoToken.js';
 import {
     addVoucerController, bulkDeleteVouchersController,
     bulkUpdateVouchersStatusController, deleteVoucherController,
@@ -14,12 +14,12 @@ import {
 
 const voucherRouter = Router()
 
-voucherRouter.post('/add-voucher', auth, addVoucerController)
+voucherRouter.post('/add-voucher', verifyCognitoToken, addVoucerController)
 voucherRouter.get('/get-all-voucher', getAllVoucherController)
-voucherRouter.put('/update-voucher', auth, updateVoucherController)
-voucherRouter.delete('/delete-voucher', auth, deleteVoucherController)
-voucherRouter.delete('/bulk-delete-vouchers', auth, bulkDeleteVouchersController)
-voucherRouter.put('/bulk-update-vouchers-status', auth, bulkUpdateVouchersStatusController)
+voucherRouter.put('/update-voucher', verifyCognitoToken, updateVoucherController)
+voucherRouter.delete('/delete-voucher', verifyCognitoToken, deleteVoucherController)
+voucherRouter.delete('/bulk-delete-vouchers', verifyCognitoToken, bulkDeleteVouchersController)
+voucherRouter.put('/bulk-update-vouchers-status', verifyCognitoToken, bulkUpdateVouchersStatusController)
 
 // Get available vouchers for checkout
 voucherRouter.post('/available', getAvailableVouchersController)
@@ -31,8 +31,8 @@ voucherRouter.post('/apply', applyVoucherController)
 voucherRouter.post('/best', getBestVoucherController)
 
 // Analytics routes (admin only)
-voucherRouter.get('/analytics/overview', auth, getVoucherOverviewController)
-voucherRouter.get('/analytics/top-vouchers', auth, getTopVouchersController)
-voucherRouter.get('/analytics/usage-trend', auth, getUsageTrendController)
+voucherRouter.get('/analytics/overview', verifyCognitoToken, getVoucherOverviewController)
+voucherRouter.get('/analytics/top-vouchers', verifyCognitoToken, getTopVouchersController)
+voucherRouter.get('/analytics/usage-trend', verifyCognitoToken, getUsageTrendController)
 
 export default voucherRouter

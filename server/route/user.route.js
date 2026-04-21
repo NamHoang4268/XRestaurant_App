@@ -5,7 +5,7 @@ import {
     updateUserDetails, uploadAvatar, userDetails, userPoints, verifyEmailController,
     verifyForgotPasswordOtp, verifyPassword, getCustomerAnalytics, googleLoginController
 } from '../controllers/user.controller.js'
-import auth from '../middleware/auth.js'
+import verifyCognitoToken from '../middleware/verifyCognitoToken.js'
 import upload from './../middleware/multer.js';
 
 const userRouter = Router()
@@ -14,19 +14,19 @@ userRouter.post('/register', registerUserController)
 userRouter.post('/verify-email', verifyEmailController)
 userRouter.post('/login', loginController)
 userRouter.post('/google-login', googleLoginController)
-userRouter.get('/logout', auth, logoutController)
-userRouter.put('/upload-avatar', auth, upload.single('avatar'), uploadAvatar)
-userRouter.put('/update-user', auth, updateUserDetails)
+userRouter.get('/logout', verifyCognitoToken, logoutController)
+userRouter.put('/upload-avatar', verifyCognitoToken, upload.single('avatar'), uploadAvatar)
+userRouter.put('/update-user', verifyCognitoToken, updateUserDetails)
 userRouter.put('/forgot-password', forgotPasswordController)
 userRouter.put('/verify-forgot-password-otp', verifyForgotPasswordOtp)
 userRouter.put('/reset-password', resetPassword)
 userRouter.post('/refresh-token', refreshTokenController)
-userRouter.post('/verify-password', auth, verifyPassword)
-userRouter.put('/change-password', auth, changePassword)
-userRouter.get('/user-details', auth, userDetails)
-userRouter.get('/user-points', auth, userPoints)
+userRouter.post('/verify-password', verifyCognitoToken, verifyPassword)
+userRouter.put('/change-password', verifyCognitoToken, changePassword)
+userRouter.get('/user-details', verifyCognitoToken, userDetails)
+userRouter.get('/user-points', verifyCognitoToken, userPoints)
 
 // Analytics route
-userRouter.get('/analytics', auth, getCustomerAnalytics)
+userRouter.get('/analytics', verifyCognitoToken, getCustomerAnalytics)
 
 export default userRouter

@@ -208,7 +208,7 @@ export const FeaturedDishes = () => {
                                     alt={product.name}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     src={
-                                        product.image?.[0] ||
+                                        product.image_url ||
                                         'https://placehold.co/400x500?text=No+Image'
                                     }
                                 />

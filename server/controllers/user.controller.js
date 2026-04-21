@@ -200,7 +200,7 @@ export async function loginController(req, res) {
 // Logout Controller
 export async function logoutController(req, res) {
     try {
-        const userId = req.userId // middleware
+        const userId = req.user.userId // Cognito middleware
 
         const cookiesOption = {
             httpOnly: true,
@@ -232,7 +232,7 @@ export async function logoutController(req, res) {
 // Upload User Avatar
 export async function uploadAvatar(req, res) {
     try {
-        const userId = req.userId; // auth middleware
+        const userId = req.user.userId; // Cognito middleware
         const image = req.file; // multer middleware
 
         if (!image) {
@@ -281,7 +281,7 @@ export async function uploadAvatar(req, res) {
 // Update User Details
 export async function updateUserDetails(req, res) {
     try {
-        const userId = req.userId // auth middleware
+        const userId = req.user.userId // Cognito middleware
         const { name, email, mobile, password } = req.body
 
         let hashPassword = ""
@@ -426,7 +426,7 @@ export async function verifyForgotPasswordOtp(req, res) {
 export async function verifyPassword(req, res) {
     try {
         const { password } = req.body;
-        const userId = req.userId; // Changed from req.user._id to req.userId
+        const userId = req.user.userId; // Cognito middleware
 
         if (!password) {
             return res.status(400).json({
@@ -615,7 +615,7 @@ export async function refreshTokenController(req, res) {
 // Get Login User Details
 export async function userDetails(req, res) {
     try {
-        const userId = req.userId
+        const userId = req.user.userId
 
         const user = await UserModel.findById(userId).select('-password -refresh_token')
 
@@ -636,7 +636,7 @@ export async function userDetails(req, res) {
 
 export async function userPoints(req, res) {
     try {
-        const userId = req.userId
+        const userId = req.user.userId
 
         const user = await UserModel.findById(userId).select('points -password -refresh_token')
 

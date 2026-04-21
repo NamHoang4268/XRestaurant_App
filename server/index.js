@@ -8,6 +8,8 @@ import helmet from "helmet";
 import http from "http";
 import { Server } from "socket.io";
 import connectDB from "./config/connectDB.js";
+import { initializeDatabase, setupDatabaseHealthCheck } from "./config/database.js";
+import healthRouter from "./route/health.route.js";
 import userRouter from "./route/user.route.js";
 import categoryRouter from "./route/category.route.js";
 import subCategoryRouter from "./route/subCategory.route.js";
@@ -108,6 +110,9 @@ app.get("/", (req, res) => {
     res.json({ message: "EatEase Server running on port " + PORT });
 });
 
+// === HEALTH CHECK ===
+app.use('/health', healthRouter);
+
 // === API ROUTES ===
 app.use('/api/user', userRouter);
 app.use('/api/category', categoryRouter);
@@ -131,9 +136,29 @@ app.use('/api/payment', paymentRouter);
 // Legacy Stripe webhook path (for Stripe CLI and production compatibility)
 app.post('/api/stripe/webhook', handleStripeWebhook);
 
+// Initialize database and start server
+// Use PostgreSQL if DB_USE_POSTGRES is true, otherwise use MongoDB
+const usePostgres = process.env.DB_USE_POSTGRES === 'true';
 
-connectDB().then(() => {
-    httpServer.listen(PORT, () => {
-        console.log("EatEase Server is running on port", PORT);
+if (usePostgres) {
+    console.log('🐘 Using PostgreSQL database');
+    initializeDatabase().then((sequelize) => {
+        // Setup health monitoring
+        setupDatabaseHealthCheck(sequelize);
+        
+        httpServer.listen(PORT, () => {
+            console.log("✅ EatEase Server is running on port", PORT);
+            console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+        });
+    }).catch((error) => {
+        console.error('❌ Failed to initialize database:', error);
+        process.exit(1);
     });
-});
+} else {
+    console.log('🍃 Using MongoDB database');
+    connectDB().then(() => {
+        httpServer.listen(PORT, () => {
+            console.log("✅ EatEase Server is running on port", PORT);
+        });
+    });
+}

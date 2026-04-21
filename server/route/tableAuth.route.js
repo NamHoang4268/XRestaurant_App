@@ -1,5 +1,5 @@
 import { Router } from "express";
-import auth from "../middleware/auth.js";
+import verifyCognitoToken from "../middleware/verifyCognitoToken.js";
 import {
     createTableAccountController,
     loginViaQRController,
@@ -13,8 +13,8 @@ const tableAuthRouter = Router();
 tableAuthRouter.post('/login-qr', loginViaQRController);
 
 // Protected routes (require authentication)
-tableAuthRouter.post('/create-account', auth, createTableAccountController);
-tableAuthRouter.get('/session', auth, getTableSessionController);
-tableAuthRouter.post('/logout', auth, logoutTableController);
+tableAuthRouter.post('/create-account', verifyCognitoToken, createTableAccountController);
+tableAuthRouter.get('/session', verifyCognitoToken, getTableSessionController);
+tableAuthRouter.post('/logout', verifyCognitoToken, logoutTableController);
 
 export default tableAuthRouter;

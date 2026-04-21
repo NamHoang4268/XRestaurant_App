@@ -1,14 +1,50 @@
-node_modules
+# Node modules (will be installed in container)
+node_modules/
 npm-debug.log
+
+# Environment files (will be provided by ECS)
 .env
-.git
+.env.*
+!.env.example
+
+# Git files
+.git/
 .gitignore
-README.md
-.DS_Store
+
+# Documentation
 *.md
-.vscode
-.idea
-coverage
-.nyc_output
-dist
-build
+!README.md
+
+# Test files
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Development files
+.vscode/
+.idea/
+
+# Logs (will be created in container)
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build files
+dist/
+build/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Kiro files
+.kiro/

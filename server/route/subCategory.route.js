@@ -1,5 +1,5 @@
 import { Router } from "express";
-import auth from './../middleware/auth.js';
+import verifyCognitoToken from './../middleware/verifyCognitoToken.js';
 import {
     addSubCategoryController,
     deleteSubCategoryController,
@@ -9,9 +9,9 @@ import {
 
 const subCategoryRouter = Router()
 
-subCategoryRouter.post('/add-sub-category', auth, addSubCategoryController)
+subCategoryRouter.post('/add-sub-category', verifyCognitoToken, addSubCategoryController)
 subCategoryRouter.get('/get-sub-category', getSubCategoryController)
-subCategoryRouter.put('/update-sub-category', auth, updateSubCategoryController)
-subCategoryRouter.delete('/delete-sub-category', auth, deleteSubCategoryController)
+subCategoryRouter.put('/update-sub-category', verifyCognitoToken, updateSubCategoryController)
+subCategoryRouter.delete('/delete-sub-category', verifyCognitoToken, deleteSubCategoryController)
 
 export default subCategoryRouter

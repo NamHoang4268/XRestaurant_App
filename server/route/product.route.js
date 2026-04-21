@@ -1,6 +1,6 @@
 import { Router } from "express";
-import auth from './../middleware/auth.js';
-import { admin } from '../middleware/Admin.js'
+import verifyCognitoToken from '../middleware/verifyCognitoToken.js';
+import authorize from '../middleware/authorize.js'
 import {
     addProductController,
     deleteProductDetails,
@@ -15,17 +15,17 @@ import {
 
 const productRouter = Router()
 
-productRouter.post('/add-product', auth, admin, addProductController)
+productRouter.post('/add-product', verifyCognitoToken, authorize('ADMIN'), addProductController)
 productRouter.post('/get-product', getProductController)
 productRouter.post('/get-product-by-category', getProductByCategory)
 productRouter.post('/get-product-by-category-and-subcategory', getProductByCategoryAndSubCategory)
 productRouter.post('/get-product-details', getProductDetails)
 
 //update product
-productRouter.put('/update-product-details', auth, admin, updateProductDetails)
+productRouter.put('/update-product-details', verifyCognitoToken, authorize('ADMIN'), updateProductDetails)
 
 //delete product
-productRouter.delete('/delete-product', auth, admin, deleteProductDetails)
+productRouter.delete('/delete-product', verifyCognitoToken, authorize('ADMIN'), deleteProductDetails)
 
 //search product
 productRouter.post('/search-product', searchProduct)
