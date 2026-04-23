@@ -7,7 +7,9 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "test:db": "node scripts/test-db-connection.js",
         "start": "node index.js",
-        "dev": "nodemon index.js"
+        "dev": "nodemon index.js",
+        "start:rds": "node index.rds.js",
+        "dev:rds": "nodemon index.rds.js"
     },
     "keywords": [],
     "author": "",
