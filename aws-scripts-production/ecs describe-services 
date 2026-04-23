@@ -1,0 +1,312 @@
+{
+    "service": {
+        "serviceArn": "arn:aws:ecs:ap-southeast-1:905418484418:service/xrestaurant-cluster/xrestaurant-backend-service",
+        "serviceName": "xrestaurant-backend-service",
+        "clusterArn": "arn:aws:ecs:ap-southeast-1:905418484418:cluster/xrestaurant-cluster",
+        "loadBalancers": [],
+        "serviceRegistries": [],
+        "status": "ACTIVE",
+        "desiredCount": 2,
+        "runningCount": 1,
+        "pendingCount": 2,
+        "launchType": "FARGATE",
+        "platformVersion": "LATEST",
+        "platformFamily": "Linux",
+        "taskDefinition": "arn:aws:ecs:ap-southeast-1:905418484418:task-definition/xrestaurant-backend-task:2",
+        "deploymentConfiguration": {
+            "deploymentCircuitBreaker": {
+                "enable": false,
+                "rollback": false
+            },
+            "maximumPercent": 200,
+            "minimumHealthyPercent": 100,
+            "strategy": "ROLLING",
+            "bakeTimeInMinutes": 0
+        },
+        "deployments": [
+            {
+                "id": "ecs-svc/8888476347657498571",
+                "status": "PRIMARY",
+                "taskDefinition": "arn:aws:ecs:ap-southeast-1:905418484418:task-definition/xrestaurant-backend-task:2",
+                "desiredCount": 0,
+                "pendingCount": 0,
+                "runningCount": 0,
+                "failedTasks": 0,
+                "createdAt": "2026-04-16T17:11:46.196000+07:00",
+                "updatedAt": "2026-04-16T17:11:46.196000+07:00",
+                "launchType": "FARGATE",
+                "platformVersion": "1.4.0",
+                "platformFamily": "Linux",
+                "networkConfiguration": {
+                    "awsvpcConfiguration": {
+                        "subnets": [
+                            "subnet-089de419fd04119f6",
+                            "subnet-01c742922bc646a13"
+                        ],
+                        "securityGroups": [
+                            "sg-0f02d34077af531ee"
+                        ],
+                        "assignPublicIp": "DISABLED"
+                    }
+                },
+                "rolloutState": "IN_PROGRESS",
+                "rolloutStateReason": "ECS deployment ecs-svc/8888476347657498571 in progress."
+            },
+            {
+                "id": "ecs-svc/5490255606234399139",
+                "status": "ACTIVE",
+                "taskDefinition": "arn:aws:ecs:ap-southeast-1:905418484418:task-definition/xrestaurant-backend-task:2",
+                "desiredCount": 1,
+                "pendingCount": 1,
+                "runningCount": 0,
+                "failedTasks": 1,
+                "createdAt": "2026-04-16T17:04:44.903000+07:00",
+                "updatedAt": "2026-04-16T17:05:07.878000+07:00",
+                "launchType": "FARGATE",
+                "platformVersion": "1.4.0",
+                "platformFamily": "Linux",
+                "networkConfiguration": {
+                    "awsvpcConfiguration": {
+                        "subnets": [
+                            "subnet-089de419fd04119f6",
+                            "subnet-01c742922bc646a13"
+                        ],
+                        "securityGroups": [
+                            "sg-0f02d34077af531ee"
+                        ],
+                        "assignPublicIp": "DISABLED"
+                    }
+                },
+                "rolloutState": "IN_PROGRESS",
+                "rolloutStateReason": "ECS deployment ecs-svc/5490255606234399139 in progress."
+            },
+            {
+                "id": "ecs-svc/4447330813522512759",
+                "status": "ACTIVE",
+                "taskDefinition": "arn:aws:ecs:ap-southeast-1:905418484418:task-definition/xrestaurant-backend-task:1",
+                "desiredCount": 2,
+                "pendingCount": 1,
+                "runningCount": 1,
+                "failedTasks": 8,
+                "createdAt": "2026-04-16T16:34:16.738000+07:00",
+                "updatedAt": "2026-04-16T17:06:21.995000+07:00",
+                "launchType": "FARGATE",
+                "platformVersion": "1.4.0",
+                "platformFamily": "Linux",
+                "networkConfiguration": {
+                    "awsvpcConfiguration": {
+                        "subnets": [
+                            "subnet-089de419fd04119f6",
+                            "subnet-01c742922bc646a13"
+                        ],
+                        "securityGroups": [
+                            "sg-0f02d34077af531ee"
+                        ],
+                        "assignPublicIp": "DISABLED"
+                    }
+                },
+                "rolloutState": "IN_PROGRESS",
+                "rolloutStateReason": "ECS deployment ecs-svc/4447330813522512759 in progress."
+            }
+        ],
+        "roleArn": "arn:aws:iam::905418484418:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+        "events": [
+            {
+                "id": "d155f4d9-0351-47bb-8797-c161719f3d32",
+                "createdAt": "2026-04-16T17:11:33.303000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task 5dcccbeae4a149e3a0df1892cd8f7ea8). Amazon ECS replaced 1 tasks due to an unhealthy status."
+            },
+            {
+                "id": "a0f5f9e9-365c-4431-a4d7-16e1ca2b967b",
+                "createdAt": "2026-04-16T17:11:11.238000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: The task cannot pull registry auth from Amazon ECR: There is a connection issue between the task and Amazon ECR. Check your task network configuration. operation error ECR: GetAuthorizationToken, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://api.ecr.ap-southeast-1.amazonaws.com/\": dial tcp 10.0.11.121:443: i/o timeout."
+            },
+            {
+                "id": "e124aab3-0b70-49c7-895d-5104ed2c1fe2",
+                "createdAt": "2026-04-16T17:10:00.085000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task f88bcd33461247af9ab70ac02b978fba)."
+            },
+            {
+                "id": "698c7779-6034-4a22-8161-802da50bbef4",
+                "createdAt": "2026-04-16T17:09:59.411000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: The task cannot pull registry auth from Amazon ECR: There is a connection issue between the task and Amazon ECR. Check your task network configuration. operation error ECR: GetAuthorizationToken, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://api.ecr.ap-southeast-1.amazonaws.com/\": dial tcp 10.0.11.121:443: i/o timeout."
+            },
+            {
+                "id": "4914a2ee-f66a-47ae-abce-a53a2b3b4324",
+                "createdAt": "2026-04-16T17:06:22.001000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task bbf0cbbb9d244cc0bf95f5ae1c44aa24). Amazon ECS replaced 1 tasks due to an unhealthy status."
+            },
+            {
+                "id": "123ccb12-c430-4c5c-986f-84d82b84391e",
+                "createdAt": "2026-04-16T17:06:10.677000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: The task cannot pull registry auth from Amazon ECR: There is a connection issue between the task and Amazon ECR. Check your task network configuration. operation error ECR: GetAuthorizationToken, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://api.ecr.ap-southeast-1.amazonaws.com/\": dial tcp 10.0.11.121:443: i/o timeout."
+            },
+            {
+                "id": "6a4eb576-ff0a-47b4-b1a3-f4e23cc82d17",
+                "createdAt": "2026-04-16T17:05:08.529000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task 74d366c6298b4566b6c0e6fa9d46408a)."
+            },
+            {
+                "id": "50a5082c-fdc5-43c5-9fc5-d50a9b5b585e",
+                "createdAt": "2026-04-16T17:04:48.746000+07:00",
+                "message": "(service xrestaurant-backend-service) has stopped 1 running tasks: (task 44ec38c7b58e4d118c3551ef96f93f9c)."
+            },
+            {
+                "id": "52f02e7b-d69b-4313-9728-404cd7d8bbad",
+                "createdAt": "2026-04-16T17:04:48.739000+07:00",
+                "message": "(service xrestaurant-backend-service) (task 44ec38c7b58e4d118c3551ef96f93f9c) failed container health checks."
+            },
+            {
+                "id": "fc00dbaf-5a35-48df-b710-27ae76ee35e2",
+                "createdAt": "2026-04-16T17:04:42.382000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: The task cannot pull registry auth from Amazon ECR: There is a connection issue between the task and Amazon ECR. Check your task network configuration. operation error ECR: GetAuthorizationToken, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://api.ecr.ap-southeast-1.amazonaws.com/\": dial tcp 10.0.12.218:443: i/o timeout."
+            },
+            {
+                "id": "504ca879-e1f9-4f07-b2c7-6d97e7e64275",
+                "createdAt": "2026-04-16T17:01:16.146000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task 5125e83c29094833832fa5d9c54f26a5). Amazon ECS replaced 1 tasks due to an unhealthy status."
+            },
+            {
+                "id": "bff50d47-5d57-4e18-a557-4d7b0dcdd21d",
+                "createdAt": "2026-04-16T17:01:06.056000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: The task cannot pull registry auth from Amazon ECR: There is a connection issue between the task and Amazon ECR. Check your task network configuration. operation error ECR: GetAuthorizationToken, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://api.ecr.ap-southeast-1.amazonaws.com/\": dial tcp 10.0.12.218:443: i/o timeout."
+            },
+            {
+                "id": "641600e4-680f-4898-ae60-2f1a1a8e74c5",
+                "createdAt": "2026-04-16T16:59:55.624000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task d749e7d3d6c74831bc3b04d2a41410a1). Amazon ECS replaced 1 tasks due to an unhealthy status."
+            },
+            {
+                "id": "5de47309-9238-4197-81a0-82002d84433b",
+                "createdAt": "2026-04-16T16:59:46.109000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: The task cannot pull registry auth from Amazon ECR: There is a connection issue between the task and Amazon ECR. Check your task network configuration. operation error ECR: GetAuthorizationToken, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://api.ecr.ap-southeast-1.amazonaws.com/\": dial tcp 10.0.12.218:443: i/o timeout."
+            },
+            {
+                "id": "32a55861-e506-47a4-b4b9-b5aa3e6ebb13",
+                "createdAt": "2026-04-16T16:56:11.625000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task a6fe51a694cd4bce942ae805f5b0b36e). Amazon ECS replaced 1 tasks due to an unhealthy status."
+            },
+            {
+                "id": "6b5eaa43-abf7-4ab5-976e-bd11b870d272",
+                "createdAt": "2026-04-16T16:55:52.580000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: The task cannot pull registry auth from Amazon ECR: There is a connection issue between the task and Amazon ECR. Check your task network configuration. operation error ECR: GetAuthorizationToken, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://api.ecr.ap-southeast-1.amazonaws.com/\": dial tcp 10.0.11.121:443: i/o timeout."
+            },
+            {
+                "id": "39a53df5-4dff-4c98-865c-0767c0e92123",
+                "createdAt": "2026-04-16T16:54:53.792000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task d8815e4c038340278c92fe535870bcab). Amazon ECS replaced 1 tasks due to an unhealthy status."
+            },
+            {
+                "id": "c7ad02d3-5499-42e3-ad0f-b287396ce23a",
+                "createdAt": "2026-04-16T16:54:44.093000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: The task cannot pull registry auth from Amazon ECR: There is a connection issue between the task and Amazon ECR. Check your task network configuration. operation error ECR: GetAuthorizationToken, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://api.ecr.ap-southeast-1.amazonaws.com/\": dial tcp 10.0.11.121:443: i/o timeout."
+            },
+            {
+                "id": "d3a553da-3eea-4a7a-97ab-a264eb2bd50e",
+                "createdAt": "2026-04-16T16:51:11.022000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task 046bc7a643004931980ae3e808d97c6f). Amazon ECS replaced 1 tasks due to an unhealthy status."
+            },
+            {
+                "id": "18be690d-59b5-4c32-95c3-8fcb26b9c7a2",
+                "createdAt": "2026-04-16T16:51:01.037000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: The task cannot pull registry auth from Amazon ECR: There is a connection issue between the task and Amazon ECR. Check your task network configuration. operation error ECR: GetAuthorizationToken, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://api.ecr.ap-southeast-1.amazonaws.com/\": dial tcp 10.0.12.218:443: i/o timeout."
+            },
+            {
+                "id": "6d84c021-bf86-4426-a682-a2f38c25d145",
+                "createdAt": "2026-04-16T16:49:54.181000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task fff4316eb65b4e11834d53f1c8b2fa99). Amazon ECS replaced 1 tasks due to an unhealthy status."
+            },
+            {
+                "id": "d1b7b2e7-bd2f-4372-a738-2a8b01a40de8",
+                "createdAt": "2026-04-16T16:49:35.004000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: The task cannot pull registry auth from Amazon ECR: There is a connection issue between the task and Amazon ECR. Check your task network configuration. operation error ECR: GetAuthorizationToken, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://api.ecr.ap-southeast-1.amazonaws.com/\": dial tcp 13.251.117.42:443: i/o timeout."
+            },
+            {
+                "id": "7dd540d4-86ef-4ea5-b74a-0c8d256ce530",
+                "createdAt": "2026-04-16T16:46:08.876000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task 3f3a36f1632244a7b684088e0a55b2a2). Amazon ECS replaced 1 tasks due to an unhealthy status."
+            },
+            {
+                "id": "37aa7a9a-b22a-435f-b028-66720fcb03fb",
+                "createdAt": "2026-04-16T16:45:47.769000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: Check your task network configuration. : signal: killed."
+            },
+            {
+                "id": "e220a76a-d00c-4dcf-9a72-f8ded4ddc1dd",
+                "createdAt": "2026-04-16T16:44:52.156000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task e3991bca9981489cb1f1a2d84713ba75). Amazon ECS replaced 1 tasks due to an unhealthy status."
+            },
+            {
+                "id": "4c33e71b-2cb2-43a8-8a4b-4ca1c3358ba4",
+                "createdAt": "2026-04-16T16:42:26.745000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task 9c9840030f024d0b96b0d5760c1cd26c). Amazon ECS replaced 1 tasks due to an unhealthy status."
+            },
+            {
+                "id": "fac24ac1-acbd-43e2-ae94-328976fce48e",
+                "createdAt": "2026-04-16T16:40:57.283000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task 0a7a869befe5402393737557d57afb4c)."
+            },
+            {
+                "id": "40b83a11-7e1c-4a9a-8609-3ce8dbc429b8",
+                "createdAt": "2026-04-16T16:39:55.182000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task 44ec38c7b58e4d118c3551ef96f93f9c)."
+            },
+            {
+                "id": "f931b116-e554-4906-9c4f-edef853b0396",
+                "createdAt": "2026-04-16T16:39:24.124000+07:00",
+                "message": "(service xrestaurant-backend-service) was unable to place a task. Reason: ResourceInitializationError: unable to pull secrets or registry auth: The task cannot pull registry auth from Amazon ECR: There is a connection issue between the task and Amazon ECR. Check your task network configuration. operation error ECR: GetAuthorizationToken, exceeded maximum number of attempts, 3, https response error StatusCode: 0, RequestID: , request send failed, Post \"https://api.ecr.ap-southeast-1.amazonaws.com/\": dial tcp 13.251.117.186:443: i/o timeout."
+            },
+            {
+                "id": "e681de1a-cae5-407f-82c5-4c74c3dff374",
+                "createdAt": "2026-04-16T16:34:43.222000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task 95a8228fd7794a4fb3395a2bce58890b)."
+            }
+        ],
+        "createdAt": "2026-04-16T16:34:16.738000+07:00",
+        "currentServiceRevisions": [
+            {
+                "arn": "arn:aws:ecs:ap-southeast-1:905418484418:service-revision/xrestaurant-cluster/xrestaurant-backend-service/8888476347657498571",
+                "requestedTaskCount": 0,
+                "runningTaskCount": 0,
+                "pendingTaskCount": 0
+            },
+            {
+                "arn": "arn:aws:ecs:ap-southeast-1:905418484418:service-revision/xrestaurant-cluster/xrestaurant-backend-service/5490255606234399139",
+                "requestedTaskCount": 1,
+                "runningTaskCount": 0,
+                "pendingTaskCount": 1
+            },
+            {
+                "arn": "arn:aws:ecs:ap-southeast-1:905418484418:service-revision/xrestaurant-cluster/xrestaurant-backend-service/4447330813522512759",
+                "requestedTaskCount": 2,
+                "runningTaskCount": 1,
+                "pendingTaskCount": 1
+            }
+        ],
+        "placementConstraints": [],
+        "placementStrategy": [],
+        "networkConfiguration": {
+            "awsvpcConfiguration": {
+                "subnets": [
+                    "subnet-089de419fd04119f6",
+                    "subnet-01c742922bc646a13"
+                ],
+                "securityGroups": [
+                    "sg-0f02d34077af531ee"
+                ],
+                "assignPublicIp": "DISABLED"
+            }
+        },
+        "healthCheckGracePeriodSeconds": 0,
+        "schedulingStrategy": "REPLICA",
+        "deploymentController": {
+            "type": "ECS"
+        },
+        "createdBy": "arn:aws:iam::905418484418:user/xrestaurant-dev",
+        "enableECSManagedTags": false,
+        "propagateTags": "NONE",
+        "enableExecuteCommand": true,
+        "availabilityZoneRebalancing": "ENABLED",
+        "resourceManagementType": "CUSTOMER"
+    }
+}

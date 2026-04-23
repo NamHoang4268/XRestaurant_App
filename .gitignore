@@ -9,7 +9,6 @@ lerna-debug.log*
 
 node_modules
 dist
-aws-scripts-production
 aws-scripts-documentdb
 dist-ssr
 *.local
@@ -30,10 +29,6 @@ dist-ssr
 client/node_modules
 server/node_modules
 client/.vite_cache
-.env
-.env.*
-.client/.env
-.server/.env
 .server/tests
 chat-history.md
 AGENT_RULES.md

@@ -1,0 +1,248 @@
+{
+    "service": {
+        "serviceArn": "arn:aws:ecs:ap-southeast-1:905418484418:service/xrestaurant-cluster/xrestaurant-backend-service",
+        "serviceName": "xrestaurant-backend-service",
+        "clusterArn": "arn:aws:ecs:ap-southeast-1:905418484418:cluster/xrestaurant-cluster",
+        "loadBalancers": [
+            {
+                "targetGroupArn": "arn:aws:elasticloadbalancing:ap-southeast-1:905418484418:targetgroup/xrestaurant-tg/6c138d0c668ecdb0",
+                "containerName": "xrestaurant-backend",
+                "containerPort": 3000
+            }
+        ],
+        "serviceRegistries": [],
+        "status": "ACTIVE",
+        "desiredCount": 0,
+        "runningCount": 2,
+        "pendingCount": 0,
+        "launchType": "FARGATE",
+        "platformVersion": "LATEST",
+        "platformFamily": "Linux",
+        "taskDefinition": "arn:aws:ecs:ap-southeast-1:905418484418:task-definition/xrestaurant-backend-task:5",
+        "deploymentConfiguration": {
+            "deploymentCircuitBreaker": {
+                "enable": false,
+                "rollback": false
+            },
+            "maximumPercent": 200,
+            "minimumHealthyPercent": 100,
+            "strategy": "ROLLING",
+            "bakeTimeInMinutes": 0
+        },
+        "deployments": [
+            {
+                "id": "ecs-svc/1278010991685775856",
+                "status": "PRIMARY",
+                "taskDefinition": "arn:aws:ecs:ap-southeast-1:905418484418:task-definition/xrestaurant-backend-task:5",
+                "desiredCount": 2,
+                "pendingCount": 0,
+                "runningCount": 2,
+                "failedTasks": 0,
+                "createdAt": "2026-04-17T09:48:36.203000+07:00",
+                "updatedAt": "2026-04-17T09:51:49.460000+07:00",
+                "launchType": "FARGATE",
+                "platformVersion": "1.4.0",
+                "platformFamily": "Linux",
+                "networkConfiguration": {
+                    "awsvpcConfiguration": {
+                        "subnets": [
+                            "subnet-089de419fd04119f6"
+                        ],
+                        "securityGroups": [
+                            "sg-0f02d34077af531ee"
+                        ],
+                        "assignPublicIp": "DISABLED"
+                    }
+                },
+                "rolloutState": "COMPLETED",
+                "rolloutStateReason": "ECS deployment ecs-svc/1278010991685775856 completed."
+            }
+        ],
+        "roleArn": "arn:aws:iam::905418484418:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+        "events": [
+            {
+                "id": "43c013e7-7e6e-4350-ac46-4a3e0d67eced",
+                "createdAt": "2026-04-17T09:51:49.466000+07:00",
+                "message": "(service xrestaurant-backend-service) has reached a steady state."
+            },
+            {
+                "id": "c588168d-661f-4b57-a692-0519c447037c",
+                "createdAt": "2026-04-17T09:51:49.465000+07:00",
+                "message": "(service xrestaurant-backend-service) (deployment ecs-svc/1278010991685775856) deployment completed."
+            },
+            {
+                "id": "eabd9490-fb8a-4db1-ac28-5b916ae314dc",
+                "createdAt": "2026-04-17T09:50:48.065000+07:00",
+                "message": "(service xrestaurant-backend-service, taskSet ecs-svc/5725003400712962949) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "c44780f4-4e9d-42df-b05a-3b92675f1b12",
+                "createdAt": "2026-04-17T09:50:48.061000+07:00",
+                "message": "(service xrestaurant-backend-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-1:905418484418:targetgroup/xrestaurant-tg/6c138d0c668ecdb0)"
+            },
+            {
+                "id": "6879594e-8db2-4f67-9344-241bbb9c1ffa",
+                "createdAt": "2026-04-17T09:50:38.490000+07:00",
+                "message": "(service xrestaurant-backend-service) has stopped 1 running tasks: (task b500126811b44b5c8b203c8d3e68ec44)."
+            },
+            {
+                "id": "603144b0-1271-4032-920c-ab3af8d8b118",
+                "createdAt": "2026-04-17T09:50:17.721000+07:00",
+                "message": "(service xrestaurant-backend-service, taskSet ecs-svc/5725003400712962949) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "117eee7e-ee4e-4e77-b8bb-5fbfdc2acf7d",
+                "createdAt": "2026-04-17T09:50:17.716000+07:00",
+                "message": "(service xrestaurant-backend-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-1:905418484418:targetgroup/xrestaurant-tg/6c138d0c668ecdb0)"
+            },
+            {
+                "id": "3e5c9172-55d4-4ceb-a644-86ee9791a9bd",
+                "createdAt": "2026-04-17T09:50:07.410000+07:00",
+                "message": "(service xrestaurant-backend-service) has stopped 1 running tasks: (task a6fae3b50afa494c8aafafbdc08dc044)."
+            },
+            {
+                "id": "8273d50a-c844-4102-bf55-53789a3b8ff7",
+                "createdAt": "2026-04-17T09:49:56.671000+07:00",
+                "message": "(service xrestaurant-backend-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-1:905418484418:targetgroup/xrestaurant-tg/6c138d0c668ecdb0)"
+            },
+            {
+                "id": "6c9d86c9-befd-4c0e-bfb6-7aaee570b461",
+                "createdAt": "2026-04-17T09:49:26.717000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task bcc23c38f81e496c8f5e29a334bcb9c5)."
+            },
+            {
+                "id": "39ed1646-6235-41c0-868e-95296385c3c6",
+                "createdAt": "2026-04-17T09:49:26.160000+07:00",
+                "message": "(service xrestaurant-backend-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-1:905418484418:targetgroup/xrestaurant-tg/6c138d0c668ecdb0)"
+            },
+            {
+                "id": "24b1b6c2-46a0-4fdd-a7e1-327087e80a34",
+                "createdAt": "2026-04-17T09:49:03.949000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task a50a90bd7e5248e29a255013a74ea657)."
+            },
+            {
+                "id": "0d82a986-0b84-47c7-90d2-673bf6e6b100",
+                "createdAt": "2026-04-17T09:43:12.675000+07:00",
+                "message": "(service xrestaurant-backend-service) has reached a steady state."
+            },
+            {
+                "id": "8c66b664-afb9-4ec3-9e65-cb72ff68a93e",
+                "createdAt": "2026-04-17T09:43:12.674000+07:00",
+                "message": "(service xrestaurant-backend-service) (deployment ecs-svc/5725003400712962949) deployment completed."
+            },
+            {
+                "id": "9029b0e9-855e-4737-bced-3e6dfae3a5d1",
+                "createdAt": "2026-04-17T09:42:20.611000+07:00",
+                "message": "(service xrestaurant-backend-service, taskSet ecs-svc/3709678386874789283) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "2957ca55-3fb3-4b27-8df0-a172e8d0072e",
+                "createdAt": "2026-04-17T09:42:20.588000+07:00",
+                "message": "(service xrestaurant-backend-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-1:905418484418:targetgroup/xrestaurant-tg/6c138d0c668ecdb0)"
+            },
+            {
+                "id": "eb7a8e4e-520a-406c-8dda-dde107d983bc",
+                "createdAt": "2026-04-17T09:42:10.418000+07:00",
+                "message": "(service xrestaurant-backend-service) has stopped 1 running tasks: (task b641e801b17a4000b634b3c3991a02fc)."
+            },
+            {
+                "id": "d27d3b43-d5e6-44a5-81f6-cbef70d729a0",
+                "createdAt": "2026-04-17T09:42:09.787000+07:00",
+                "message": "(service xrestaurant-backend-service, taskSet ecs-svc/3709678386874789283) has begun draining connections on 1 tasks."
+            },
+            {
+                "id": "2fadbc47-629c-40ce-b71c-99c80e499b21",
+                "createdAt": "2026-04-17T09:42:09.780000+07:00",
+                "message": "(service xrestaurant-backend-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-1:905418484418:targetgroup/xrestaurant-tg/6c138d0c668ecdb0)"
+            },
+            {
+                "id": "f5b341a5-22c0-419c-b020-c6c96d0628e7",
+                "createdAt": "2026-04-17T09:41:58.747000+07:00",
+                "message": "(service xrestaurant-backend-service) has stopped 1 running tasks: (task 5c1fceb5b39f43cbb371bc4ed0304fbd)."
+            },
+            {
+                "id": "911440ad-5f6d-4b46-97d1-ff4d716015fb",
+                "createdAt": "2026-04-17T09:41:38.485000+07:00",
+                "message": "(service xrestaurant-backend-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-1:905418484418:targetgroup/xrestaurant-tg/6c138d0c668ecdb0)"
+            },
+            {
+                "id": "bc15dab6-fed1-4ee1-8462-a7d2a35b6eef",
+                "createdAt": "2026-04-17T09:41:07.808000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task a6fae3b50afa494c8aafafbdc08dc044)."
+            },
+            {
+                "id": "d83658a7-09fa-47d1-8e4f-fe38f7671035",
+                "createdAt": "2026-04-17T09:41:07.102000+07:00",
+                "message": "(service xrestaurant-backend-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-1:905418484418:targetgroup/xrestaurant-tg/6c138d0c668ecdb0)"
+            },
+            {
+                "id": "bb52d98f-b892-40ba-8a48-6099ee9b7846",
+                "createdAt": "2026-04-17T09:40:47.276000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task b500126811b44b5c8b203c8d3e68ec44)."
+            },
+            {
+                "id": "b05d8380-43e5-48ca-abb1-9277e7e81f89",
+                "createdAt": "2026-04-17T09:32:18.454000+07:00",
+                "message": "(service xrestaurant-backend-service) has reached a steady state."
+            },
+            {
+                "id": "52a6efe8-51dc-41d9-9ea4-5e97312ec8f5",
+                "createdAt": "2026-04-17T09:32:18.453000+07:00",
+                "message": "(service xrestaurant-backend-service) (deployment ecs-svc/3709678386874789283) deployment completed."
+            },
+            {
+                "id": "de20ba4b-64ea-42b8-978f-b82e5de02f92",
+                "createdAt": "2026-04-17T09:31:37.935000+07:00",
+                "message": "(service xrestaurant-backend-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-1:905418484418:targetgroup/xrestaurant-tg/6c138d0c668ecdb0)"
+            },
+            {
+                "id": "9384c893-183c-476b-b429-555c81775e3c",
+                "createdAt": "2026-04-17T09:31:06.115000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task b641e801b17a4000b634b3c3991a02fc)."
+            },
+            {
+                "id": "681161a5-a765-4ea8-81b1-5bc01a56c264",
+                "createdAt": "2026-04-17T09:31:05.488000+07:00",
+                "message": "(service xrestaurant-backend-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:ap-southeast-1:905418484418:targetgroup/xrestaurant-tg/6c138d0c668ecdb0)"
+            },
+            {
+                "id": "82149e18-3547-436b-a552-6d1294ba0a06",
+                "createdAt": "2026-04-17T09:30:45.252000+07:00",
+                "message": "(service xrestaurant-backend-service) has started 1 tasks: (task 5c1fceb5b39f43cbb371bc4ed0304fbd)."
+            }
+        ],
+        "createdAt": "2026-04-17T09:30:23.598000+07:00",
+        "currentServiceRevisions": [
+            {
+                "arn": "arn:aws:ecs:ap-southeast-1:905418484418:service-revision/xrestaurant-cluster/xrestaurant-backend-service/1278010991685775856",
+                "requestedTaskCount": 2,
+                "runningTaskCount": 2,
+                "pendingTaskCount": 0
+            }
+        ],
+        "placementConstraints": [],
+        "placementStrategy": [],
+        "networkConfiguration": {
+            "awsvpcConfiguration": {
+                "subnets": [
+                    "subnet-089de419fd04119f6"
+                ],
+                "securityGroups": [
+                    "sg-0f02d34077af531ee"
+                ],
+                "assignPublicIp": "DISABLED"
+            }
+        },
+        "healthCheckGracePeriodSeconds": 60,
+        "schedulingStrategy": "REPLICA",
+        "deploymentController": {
+            "type": "ECS"
+        },
+        "createdBy": "arn:aws:iam::905418484418:user/xrestaurant-dev",
+        "enableECSManagedTags": false,
+        "propagateTags": "NONE",
+        "enableExecuteCommand": false,
+        "availabilityZoneRebalancing": "ENABLED",
+        "resourceManagementType": "CUSTOMER"
+    }
+}
