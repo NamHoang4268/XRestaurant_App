@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 aws-scripts-production
+aws-scripts-documentdb
 dist-ssr
 *.local
 
