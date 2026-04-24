@@ -1,28 +1,6 @@
 import { initializeDatabase, closeDatabase } from '../config/database.js';
 import dotenv from 'dotenv';
 
-// Import all models to ensure they are registered with Sequelize
-import User from '../models-sequelize/user.model.js';
-import Customer from '../models-sequelize/customer.model.js';
-import Category from '../models-sequelize/category.model.js';
-import SubCategory from '../models-sequelize/subCategory.model.js';
-import Product from '../models-sequelize/product.model.js';
-import ProductOption from '../models-sequelize/productOption.model.js';
-import Table from '../models-sequelize/table.model.js';
-import TableOrder from '../models-sequelize/tableOrder.model.js';
-import OrderItem from '../models-sequelize/orderItem.model.js';
-import Booking from '../models-sequelize/booking.model.js';
-import Voucher from '../models-sequelize/voucher.model.js';
-import Payment from '../models-sequelize/payment.model.js';
-import ServiceRequest from '../models-sequelize/serviceRequest.model.js';
-import SupportChat from '../models-sequelize/supportChat.model.js';
-import SupportChatMessage from '../models-sequelize/supportChatMessage.model.js';
-import ProductCategory from '../models-sequelize/productCategory.model.js';
-import ProductSubCategory from '../models-sequelize/productSubCategory.model.js';
-import VoucherProduct from '../models-sequelize/voucherProduct.model.js';
-import VoucherCategory from '../models-sequelize/voucherCategory.model.js';
-import VoucherUsage from '../models-sequelize/voucherUsage.model.js';
-
 dotenv.config();
 
 /**
@@ -124,6 +102,41 @@ const EXPECTED_INDEXES = [
     { table: 'payments', column: 'tableOrderId' },
     { table: 'support_chats', column: 'conversationId' }
 ];
+
+/**
+ * Import all models after database is initialized
+ * This ensures the database connection is established before models are loaded
+ */
+async function importModels() {
+    console.log('📦 Loading Sequelize models...');
+    
+    // Import all models to ensure they are registered with Sequelize
+    const models = await Promise.all([
+        import('../models-sequelize/user.model.js'),
+        import('../models-sequelize/customer.model.js'),
+        import('../models-sequelize/category.model.js'),
+        import('../models-sequelize/subCategory.model.js'),
+        import('../models-sequelize/product.model.js'),
+        import('../models-sequelize/productOption.model.js'),
+        import('../models-sequelize/table.model.js'),
+        import('../models-sequelize/tableOrder.model.js'),
+        import('../models-sequelize/orderItem.model.js'),
+        import('../models-sequelize/booking.model.js'),
+        import('../models-sequelize/voucher.model.js'),
+        import('../models-sequelize/payment.model.js'),
+        import('../models-sequelize/serviceRequest.model.js'),
+        import('../models-sequelize/supportChat.model.js'),
+        import('../models-sequelize/supportChatMessage.model.js'),
+        import('../models-sequelize/productCategory.model.js'),
+        import('../models-sequelize/productSubCategory.model.js'),
+        import('../models-sequelize/voucherProduct.model.js'),
+        import('../models-sequelize/voucherCategory.model.js'),
+        import('../models-sequelize/voucherUsage.model.js')
+    ]);
+    
+    console.log(`✅ Loaded ${models.length} Sequelize models`);
+    return models;
+}
 
 /**
  * Verify that all expected tables exist in the database
@@ -316,8 +329,11 @@ async function initializeSchema() {
         sequelize = await initializeDatabase();
         console.log('✅ Database connection established');
         
-        // Step 2: Sync all models (create tables)
-        console.log('\n📡 Step 2: Creating database schema...');
+        // Step 2: Import models after database connection is ready
+        await importModels();
+        
+        // Step 3: Sync all models (create tables)
+        console.log('\n📡 Step 3: Creating database schema...');
         console.log('   This will create all tables, indexes, and constraints');
         console.log('   Using Sequelize sync with alter: false, force: false');
         
@@ -328,25 +344,25 @@ async function initializeSchema() {
         
         console.log('✅ Schema synchronization completed');
         
-        // Step 3: Verify tables
+        // Step 4: Verify tables
         const tablesOk = await verifyTables(sequelize);
         if (!tablesOk) {
             throw new Error('Table verification failed');
         }
         
-        // Step 4: Verify indexes
+        // Step 5: Verify indexes
         const indexesOk = await verifyIndexes(sequelize);
         if (!indexesOk) {
             console.warn('⚠️  Index verification completed with warnings');
         }
         
-        // Step 5: Verify foreign keys
+        // Step 6: Verify foreign keys
         const foreignKeysOk = await verifyForeignKeys(sequelize);
         if (!foreignKeysOk) {
             throw new Error('Foreign key verification failed');
         }
         
-        // Step 6: Display summary
+        // Step 7: Display summary
         await displaySchemaSummary(sequelize);
         
         // Success

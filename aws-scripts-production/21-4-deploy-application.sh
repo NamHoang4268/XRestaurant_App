@@ -22,13 +22,13 @@
 set -e  # Exit on any error
 
 # Configuration
-REGION="ap-southeast-1"
+REGION="us-west-2"
 ECR_REPOSITORY="xrestaurant-backend"
 IMAGE_TAG="postgres-v$(date +%Y%m%d-%H%M%S)"
 CLUSTER_NAME="xrestaurant-cluster"
 SERVICE_NAME="xrestaurant-service"
 TASK_DEFINITION_FAMILY="xrestaurant-postgres"
-ALB_TARGET_GROUP_ARN="arn:aws:elasticloadbalancing:ap-southeast-1:123456789012:targetgroup/xrestaurant-tg/1234567890123456"
+ALB_TARGET_GROUP_ARN="arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/xrestaurant-tg/1234567890123456"
 HEALTH_CHECK_PATH="/health"
 
 # Colors for output

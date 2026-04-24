@@ -1,9 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { getSequelize } from '../config/database.js';
 
-const sequelize = getSequelize();
-
-const SupportChat = sequelize.define('SupportChat', {
+export function initSupportChatModel(sequelize) {
+    const SupportChat = sequelize.define('SupportChat', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -87,6 +85,7 @@ const SupportChat = sequelize.define('SupportChat', {
         { fields: ['expiresAt'] },
         { fields: ['conversationId'] }
     ]
-});
+    });
 
-export default SupportChat;
+    return SupportChat;
+}

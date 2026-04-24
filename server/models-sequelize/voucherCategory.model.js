@@ -1,9 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { getSequelize } from '../config/database.js';
 
-const sequelize = getSequelize();
-
-const VoucherCategory = sequelize.define('VoucherCategory', {
+export function initVoucherCategoryModel(sequelize) {
+    const VoucherCategory = sequelize.define('VoucherCategory', {
     voucher_id: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -32,6 +30,7 @@ const VoucherCategory = sequelize.define('VoucherCategory', {
         { fields: ['voucher_id'] },
         { fields: ['category_id'] }
     ]
-});
+    });
 
-export default VoucherCategory;
+    return VoucherCategory;
+}

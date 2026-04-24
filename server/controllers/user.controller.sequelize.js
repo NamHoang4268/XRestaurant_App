@@ -9,7 +9,10 @@ import generatedOtp from '../utils/generatedOtp.js';
 import forgotPasswordTemplate from '../utils/forgotPasswordTemplate.js';
 import welcomeEmailTemplate from '../utils/welcomeEmailTemplate.js';
 import jwt from 'jsonwebtoken'
-import TableOrder from '../models-sequelize/tableOrder.model.js' // Sequelize model
+// TableOrder is initialized via initTableOrderModel(sequelize) — cannot import directly
+// It is only needed for analytics. We use a lazy getter pattern.
+let TableOrder = null;
+export function setTableOrderModel(model) { TableOrder = model; }
 import { OAuth2Client } from 'google-auth-library'
 import { Op } from 'sequelize' // For Sequelize operators
 
@@ -835,6 +838,13 @@ export async function getCustomerAnalytics(req, res) {
         }
 
         // Sequelize: findAll with where, include (populate), and order
+        if (!TableOrder) {
+            return res.status(200).json({
+                message: "Analytics chưa khả dụng (TableOrder model chưa khởi tạo)",
+                data: { summary: { totalCustomers: 0, anonymousVisits: 0, newCustomers: 0, returningCustomers: 0, avgOrdersPerCustomer: 0 }, topByOrders: [], topByRevenue: [], customerGrowth: [] },
+                error: false, success: true
+            });
+        }
         const orders = await TableOrder.findAll({
             where: orderQuery,
             include: [{

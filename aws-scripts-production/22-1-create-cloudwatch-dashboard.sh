@@ -19,7 +19,7 @@
 set -e  # Exit on any error
 
 # Configuration
-REGION="ap-southeast-1"
+REGION="us-west-2"
 RDS_INSTANCE_ID="xrestaurant-db"
 ECS_CLUSTER_NAME="xrestaurant-cluster"
 ECS_SERVICE_NAME="xrestaurant-service"

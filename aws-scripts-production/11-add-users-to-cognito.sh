@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ============================================================================
-# File: 16-add-users-to-cognito.sh
+# File: 11-add-users-to-cognito.sh
 # Description: Add demo users to Cognito User Pool
 # Author: Kiro AI Assistant
 # Date: 2026-04-17
@@ -9,24 +9,22 @@
 
 set -e
 
-AWS_REGION="ap-southeast-1"
+# Source configuration
+source ./vpc-config.sh
 
 echo "=========================================="
 echo "👥 Add Demo Users to Cognito"
 echo "=========================================="
 
-# Get Cognito User Pool ID
-USER_POOL_ID=$(aws cognito-idp list-user-pools \
-    --max-results 10 \
-    --region ${AWS_REGION} \
-    --query "UserPools[?Name=='xrestaurant-user-pool'].Id" \
-    --output text)
-
-if [ -z "${USER_POOL_ID}" ]; then
+# Check if Cognito config exists
+if [ -z "${COGNITO_USER_POOL_ID}" ]; then
     echo "❌ Cognito User Pool not found!"
-    echo "Please run script 11-create-cognito.sh first"
+    echo "Please run script 10-create-cognito.sh first"
     exit 1
 fi
+
+USER_POOL_ID="${COGNITO_USER_POOL_ID}"
+echo "✅ User Pool ID: ${USER_POOL_ID}"
 
 echo "✅ User Pool ID: ${USER_POOL_ID}"
 

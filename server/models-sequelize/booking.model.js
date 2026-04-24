@@ -1,9 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { getSequelize } from '../config/database.js';
 
-const sequelize = getSequelize();
-
-const Booking = sequelize.define('Booking', {
+export function initBookingModel(sequelize) {
+    const Booking = sequelize.define('Booking', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -152,6 +150,7 @@ const Booking = sequelize.define('Booking', {
         { fields: ['phone'] },
         { fields: ['email'] }
     ]
-});
+    });
 
-export default Booking;
+    return Booking;
+}

@@ -1,9 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { getSequelize } from '../config/database.js';
 
-const sequelize = getSequelize();
-
-const VoucherUsage = sequelize.define('VoucherUsage', {
+export function initVoucherUsageModel(sequelize) {
+    const VoucherUsage = sequelize.define('VoucherUsage', {
     voucher_id: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -37,6 +35,7 @@ const VoucherUsage = sequelize.define('VoucherUsage', {
         { fields: ['user_id'] },
         { fields: ['usedAt'] }
     ]
-});
+    });
 
-export default VoucherUsage;
+    return VoucherUsage;
+}

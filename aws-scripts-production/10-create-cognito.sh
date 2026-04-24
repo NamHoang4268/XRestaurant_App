@@ -17,7 +17,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-REGION="ap-southeast-1"
+REGION="us-west-2"
 USER_POOL_NAME="xrestaurant-users"
 APP_CLIENT_NAME="xrestaurant-web-client"
 DOMAIN_PREFIX="xrestaurant-$(date +%s)"

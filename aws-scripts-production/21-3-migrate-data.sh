@@ -21,7 +21,7 @@
 set -e  # Exit on any error
 
 # Configuration
-REGION="ap-southeast-1"
+REGION="us-west-2"
 ECR_REPOSITORY="xrestaurant-backend"
 IMAGE_TAG="postgres-data-migration"
 CLUSTER_NAME="xrestaurant-cluster"

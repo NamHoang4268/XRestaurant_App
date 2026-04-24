@@ -1,9 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { getSequelize } from '../config/database.js';
 
-const sequelize = getSequelize();
-
-const TableOrder = sequelize.define('TableOrder', {
+export function initTableOrderModel(sequelize) {
+    const TableOrder = sequelize.define('TableOrder', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -139,4 +137,5 @@ const TableOrder = sequelize.define('TableOrder', {
     ]
 });
 
-export default TableOrder;
+    return TableOrder;
+}

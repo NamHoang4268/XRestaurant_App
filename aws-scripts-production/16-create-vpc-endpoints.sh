@@ -17,7 +17,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-REGION="ap-southeast-1"
+REGION="us-west-2"
 
 echo -e "${BLUE}============================================${NC}"
 echo -e "${BLUE}   VPC Endpoints Setup - XRestaurant${NC}"

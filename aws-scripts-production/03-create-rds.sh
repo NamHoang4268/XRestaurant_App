@@ -18,7 +18,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-REGION="ap-southeast-1"
+REGION="us-west-2"
 DB_INSTANCE_ID="xrestaurant-db"
 DB_NAME="xrestaurant"
 DB_USERNAME="xrestaurant_admin"

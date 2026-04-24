@@ -17,7 +17,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-REGION="ap-southeast-1"
+REGION="us-west-2"
 KB_NAME="xrestaurant-kb"
 KB_DESCRIPTION="Knowledge Base for XRestaurant - menu, policies, FAQ"
 EMBEDDING_MODEL="amazon.titan-embed-text-v1"

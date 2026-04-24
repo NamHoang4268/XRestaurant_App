@@ -20,12 +20,12 @@
 set -e  # Exit on any error
 
 # Configuration
-REGION="ap-southeast-1"
+REGION="us-west-2"
 CLUSTER_NAME="xrestaurant-cluster"
 SERVICE_NAME="xrestaurant-service"
 MONGODB_TASK_DEFINITION_FAMILY="xrestaurant-mongodb"
 POSTGRES_TASK_DEFINITION_FAMILY="xrestaurant-postgres"
-ALB_TARGET_GROUP_ARN="arn:aws:elasticloadbalancing:ap-southeast-1:123456789012:targetgroup/xrestaurant-tg/1234567890123456"
+ALB_TARGET_GROUP_ARN="arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/xrestaurant-tg/1234567890123456"
 HEALTH_CHECK_PATH="/health"
 
 # Colors for output

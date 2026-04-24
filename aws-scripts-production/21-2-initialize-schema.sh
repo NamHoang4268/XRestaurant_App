@@ -18,15 +18,18 @@
 # =============================================================================
 
 set -e  # Exit on any error
+export AWS_PAGER=""
+# Load VPC configuration
+source ./vpc-config.sh
 
 # Configuration
-REGION="ap-southeast-1"
-ECR_REPOSITORY="xrestaurant-backend"
+REGION="$AWS_REGION"
+ECR_REPOSITORY="$ECR_REPOSITORY_NAME"
 IMAGE_TAG="postgres-schema-init"
-CLUSTER_NAME="xrestaurant-cluster"
+CLUSTER_NAME="$ECS_CLUSTER"
 TASK_DEFINITION_FAMILY="xrestaurant-schema-init"
-SUBNET_ID="subnet-0123456789abcdef0"  # Private subnet where RDS is located
-SECURITY_GROUP_ID="sg-0123456789abcdef0"  # Security group with RDS access
+SUBNET_ID="$PUBLIC_SUBNET_1"  # Use public subnet for internet access
+SECURITY_GROUP_ID="$SG_RDS"  # RDS security group with database access
 
 # Colors for output
 RED='\033[0;31m'
@@ -171,8 +174,8 @@ create_task_definition() {
     "requiresCompatibilities": ["FARGATE"],
     "cpu": "512",
     "memory": "1024",
-    "executionRoleArn": "arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/ecsTaskExecutionRole",
-    "taskRoleArn": "arn:aws:iam::$(aws sts get-caller-identity --query Account --output text):role/ecsTaskRole",
+    "executionRoleArn": "$ECS_EXECUTION_ROLE_ARN",
+    "taskRoleArn": "$ECS_TASK_ROLE_ARN",
     "containerDefinitions": [
         {
             "name": "schema-init-container",
@@ -190,7 +193,7 @@ create_task_definition() {
                 },
                 {
                     "name": "DB_SECRET_NAME",
-                    "value": "xrestaurant/rds/credentials"
+                    "value": "$DB_SECRET_NAME"
                 },
                 {
                     "name": "AWS_REGION",
@@ -200,7 +203,7 @@ create_task_definition() {
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/xrestaurant-schema-init",
+                    "awslogs-group": "$ECS_LOG_GROUP-schema-init",
                     "awslogs-region": "$REGION",
                     "awslogs-stream-prefix": "schema-init"
                 }
@@ -233,20 +236,20 @@ create_log_group() {
     log "Creating CloudWatch log group..."
     
     # Check if log group exists
-    aws logs describe-log-groups --log-group-name-prefix "/ecs/xrestaurant-schema-init" --region $REGION --query 'logGroups[0].logGroupName' --output text 2>/dev/null
+    aws logs describe-log-groups --log-group-name-prefix "$ECS_LOG_GROUP-schema-init" --region $REGION --query 'logGroups[0].logGroupName' --output text 2>/dev/null
     
     if [ $? -ne 0 ]; then
         # Create log group
-        aws logs create-log-group --log-group-name "/ecs/xrestaurant-schema-init" --region $REGION
+        aws logs create-log-group --log-group-name "$ECS_LOG_GROUP-schema-init" --region $REGION
         
         if [ $? -eq 0 ]; then
-            success "CloudWatch log group created: /ecs/xrestaurant-schema-init"
+            success "CloudWatch log group created: $ECS_LOG_GROUP-schema-init"
         else
             error "Failed to create CloudWatch log group"
             exit 1
         fi
     else
-        log "CloudWatch log group already exists: /ecs/xrestaurant-schema-init"
+        log "CloudWatch log group already exists: $ECS_LOG_GROUP-schema-init"
     fi
 }
 
@@ -343,7 +346,7 @@ show_task_logs() {
     
     # Get log stream name
     local log_stream=$(aws logs describe-log-streams \
-        --log-group-name "/ecs/xrestaurant-schema-init" \
+        --log-group-name "$ECS_LOG_GROUP-schema-init" \
         --order-by LastEventTime \
         --descending \
         --max-items 1 \
@@ -354,7 +357,7 @@ show_task_logs() {
     if [ -n "$log_stream" ] && [ "$log_stream" != "None" ]; then
         echo "----------------------------------------"
         aws logs get-log-events \
-            --log-group-name "/ecs/xrestaurant-schema-init" \
+            --log-group-name "$ECS_LOG_GROUP-schema-init" \
             --log-stream-name "$log_stream" \
             --region $REGION \
             --query 'events[*].message' \

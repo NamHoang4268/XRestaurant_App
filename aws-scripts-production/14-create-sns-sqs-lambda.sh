@@ -17,7 +17,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-REGION="ap-southeast-1"
+REGION="us-west-2"
 SNS_TOPIC_NAME="xrestaurant-order-events"
 SQS_QUEUE_NAME="xrestaurant-order-processing"
 DLQ_NAME="xrestaurant-order-dlq"

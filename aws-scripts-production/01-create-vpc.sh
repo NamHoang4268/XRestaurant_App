@@ -12,7 +12,7 @@ set -e
 # Disable AWS CLI pager
 export AWS_PAGER=""
 
-AWS_REGION="ap-southeast-1"
+AWS_REGION="us-west-2"
 VPC_NAME="xrestaurant-vpc"
 VPC_CIDR="10.0.0.0/16"
 

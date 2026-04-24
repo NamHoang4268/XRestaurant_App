@@ -1,9 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { getSequelize } from '../config/database.js';
 
-const sequelize = getSequelize();
-
-const ServiceRequest = sequelize.define('ServiceRequest', {
+export function initServiceRequestModel(sequelize) {
+    const ServiceRequest = sequelize.define('ServiceRequest', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -76,6 +74,7 @@ const ServiceRequest = sequelize.define('ServiceRequest', {
         { fields: ['tableId', 'status'] },
         { fields: ['createdAt'] }
     ]
-});
+    });
 
-export default ServiceRequest;
+    return ServiceRequest;
+}

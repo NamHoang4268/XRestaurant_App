@@ -4,7 +4,7 @@ import {
     logoutController, refreshTokenController, registerUserController, resetPassword,
     updateUserDetails, uploadAvatar, userDetails, userPoints, verifyEmailController,
     verifyForgotPasswordOtp, verifyPassword, getCustomerAnalytics, googleLoginController
-} from '../controllers/user.controller.js'
+} from '../controllers/user.controller.sequelize.js'
 import verifyCognitoToken from '../middleware/verifyCognitoToken.js'
 import upload from './../middleware/multer.js';
 

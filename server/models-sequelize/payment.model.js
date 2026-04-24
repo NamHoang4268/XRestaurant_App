@@ -1,9 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { getSequelize } from '../config/database.js';
 
-const sequelize = getSequelize();
-
-const Payment = sequelize.define('Payment', {
+export function initPaymentModel(sequelize) {
+    const Payment = sequelize.define('Payment', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -171,6 +169,7 @@ const Payment = sequelize.define('Payment', {
         { fields: ['tableOrderId'] },
         { fields: ['createdAt'] }
     ]
-});
+    });
 
-export default Payment;
+    return Payment;
+}

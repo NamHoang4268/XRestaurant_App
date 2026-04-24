@@ -1,9 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { getSequelize } from '../config/database.js';
 
-const sequelize = getSequelize();
-
-const User = sequelize.define('User', {
+export function initUserModel(sequelize) {
+    const User = sequelize.define('User', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -191,4 +189,5 @@ User.prototype.updateTierLevel = function() {
     this.pointsMultiplier = multiplier;
 };
 
-export default User;
+    return User;
+}

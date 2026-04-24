@@ -1,9 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { getSequelize } from '../config/database.js';
 
-const sequelize = getSequelize();
-
-const ProductSubCategory = sequelize.define('ProductSubCategory', {
+export function initProductSubCategoryModel(sequelize) {
+    const ProductSubCategory = sequelize.define('ProductSubCategory', {
     product_id: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -32,6 +30,7 @@ const ProductSubCategory = sequelize.define('ProductSubCategory', {
         { fields: ['product_id'] },
         { fields: ['sub_category_id'] }
     ]
-});
+    });
 
-export default ProductSubCategory;
+    return ProductSubCategory;
+}

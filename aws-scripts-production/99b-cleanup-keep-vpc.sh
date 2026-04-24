@@ -13,7 +13,7 @@ set -e
 export AWS_PAGER=""
 
 VPC_ID="vpc-0bfe5ede9c4354e5f"
-AWS_REGION="ap-southeast-1"
+AWS_REGION="us-west-2"
 
 echo "=========================================="
 echo "🗑️  CLEANUP RESOURCES (Keep VPC Structure)"

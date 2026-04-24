@@ -1,9 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { getSequelize } from '../config/database.js';
 
-const sequelize = getSequelize();
-
-const Customer = sequelize.define('Customer', {
+export function initCustomerModel(sequelize) {
+    const Customer = sequelize.define('Customer', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -40,4 +38,5 @@ const Customer = sequelize.define('Customer', {
     ]
 });
 
-export default Customer;
+    return Customer;
+}

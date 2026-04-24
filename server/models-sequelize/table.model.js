@@ -1,9 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { getSequelize } from '../config/database.js';
 
-const sequelize = getSequelize();
-
-const Table = sequelize.define('Table', {
+export function initTableModel(sequelize) {
+    const Table = sequelize.define('Table', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -83,4 +81,5 @@ const Table = sequelize.define('Table', {
     ]
 });
 
-export default Table;
+    return Table;
+}

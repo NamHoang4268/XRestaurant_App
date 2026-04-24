@@ -19,7 +19,7 @@
 set -e  # Exit on any error
 
 # Configuration
-REGION="ap-southeast-1"
+REGION="us-west-2"
 TASK_ROLE_NAME="ecsTaskRole"
 NAMESPACE="XRestaurant/Application"
 LOG_GROUP_NAME="/ecs/xrestaurant-postgres"
@@ -383,7 +383,7 @@ Response format:
 Set these environment variables:
 ```bash
 NODE_ENV=production          # Enable metrics collection
-AWS_REGION=ap-southeast-1   # CloudWatch region
+AWS_REGION=us-west-2   # CloudWatch region
 ```
 
 ## 9. Testing Metrics
@@ -393,7 +393,7 @@ AWS_REGION=ap-southeast-1   # CloudWatch region
 curl http://localhost:5000/metrics
 
 # Check CloudWatch metrics
-aws cloudwatch list-metrics --namespace "XRestaurant/Application" --region ap-southeast-1
+aws cloudwatch list-metrics --namespace "XRestaurant/Application" --region us-west-2
 
 # Get metric statistics
 aws cloudwatch get-metric-statistics \
@@ -403,7 +403,7 @@ aws cloudwatch get-metric-statistics \
     --end-time 2026-04-19T12:00:00Z \
     --period 300 \
     --statistics Average \
-    --region ap-southeast-1
+    --region us-west-2
 ```
 
 ## 10. Best Practices
@@ -447,7 +447,7 @@ create_testing_script() {
 #!/bin/bash
 
 # Test script for custom metrics
-REGION="ap-southeast-1"
+REGION="us-west-2"
 NAMESPACE="XRestaurant/Application"
 
 echo "Testing custom metrics..."

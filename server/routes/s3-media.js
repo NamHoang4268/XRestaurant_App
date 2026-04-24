@@ -6,11 +6,11 @@ import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/clien
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const s3Client = new S3Client({ 
-    region: process.env.AWS_REGION || 'ap-southeast-1'
+    region: process.env.AWS_REGION || 'us-west-2'
 });
 
-const MEDIA_BUCKET = 'xrestaurant-media-905418484418';
-const DOCS_BUCKET = 'xrestaurant-documents-905418484418';
+const MEDIA_BUCKET = process.env.S3_MEDIA_BUCKET    || 'xrestaurant-media-728560460807';
+const DOCS_BUCKET  = process.env.S3_DOCS_BUCKET     || 'xrestaurant-documents-728560460807';
 
 /**
  * List all images in media bucket

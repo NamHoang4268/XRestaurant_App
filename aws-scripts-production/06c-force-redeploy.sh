@@ -15,7 +15,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-REGION="ap-southeast-1"
+REGION="us-west-2"
 
 echo -e "${BLUE}============================================${NC}"
 echo -e "${BLUE}   Force ECS Redeployment${NC}"
@@ -60,7 +60,7 @@ echo ""
 echo -e "${GREEN}✅ Deployment in progress!${NC}"
 echo ""
 echo -e "${YELLOW}📝 Monitor logs:${NC}"
-echo -e "   aws logs tail /ecs/xrestaurant-backend --follow --region ap-southeast-1"
+echo -e "   aws logs tail /ecs/xrestaurant-backend --follow --region us-west-2"
 echo ""
 echo -e "${YELLOW}📝 Look for:${NC}"
 echo -e "   - New task ID starting"

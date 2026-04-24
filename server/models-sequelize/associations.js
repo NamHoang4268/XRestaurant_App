@@ -2,7 +2,7 @@
  * Sequelize Model Associations
  * 
  * This file defines all relationships between models.
- * Import this file after all models are loaded to establish associations.
+ * Call this function after all models are initialized to establish associations.
  * 
  * Association Types:
  * - hasMany: One-to-Many relationship
@@ -11,31 +11,34 @@
  * - hasOne: One-to-One relationship
  */
 
-import User from './user.model.js';
-import Customer from './customer.model.js';
-import Category from './category.model.js';
-import SubCategory from './subCategory.model.js';
-import Product from './product.model.js';
-import ProductOption from './productOption.model.js';
-import Table from './table.model.js';
-import TableOrder from './tableOrder.model.js';
-import OrderItem from './orderItem.model.js';
-import Booking from './booking.model.js';
-import Voucher from './voucher.model.js';
-import Payment from './payment.model.js';
-import ServiceRequest from './serviceRequest.model.js';
-import SupportChat from './supportChat.model.js';
-import SupportChatMessage from './supportChatMessage.model.js';
-import ProductCategory from './productCategory.model.js';
-import ProductSubCategory from './productSubCategory.model.js';
-import VoucherProduct from './voucherProduct.model.js';
-import VoucherCategory from './voucherCategory.model.js';
-import VoucherUsage from './voucherUsage.model.js';
-
 /**
  * Define all model associations
+ * @param {Object} models - Object containing all initialized models
  */
-export function defineAssociations() {
+export function defineAssociations(models) {
+    const {
+        User,
+        Customer,
+        Category,
+        SubCategory,
+        Product,
+        ProductOption,
+        Table,
+        TableOrder,
+        OrderItem,
+        Booking,
+        Voucher,
+        Payment,
+        ServiceRequest,
+        SupportChat,
+        SupportChatMessage,
+        ProductCategory,
+        ProductSubCategory,
+        VoucherProduct,
+        VoucherCategory,
+        VoucherUsage
+    } = models;
+
     // ============================================
     // User Associations
     // ============================================

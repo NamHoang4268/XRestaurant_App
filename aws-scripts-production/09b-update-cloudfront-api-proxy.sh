@@ -73,7 +73,8 @@ for origin in config['Origins']['Items']:
 
 # Add API origin if not exists
 if not api_origin_exists:
-    alb_domain = "xrestaurant-alb-977783244.ap-southeast-1.elb.amazonaws.com"
+    import os
+    alb_domain = os.environ.get('ALB_DNS', 'xrestaurant-alb-1501618852.us-west-2.elb.amazonaws.com')
     
     api_origin = {
         "Id": "ALB-API",
@@ -261,16 +262,16 @@ if [ -f "../client/.env.production" ]; then
     cp ../client/.env.production ../client/.env.production.backup
     
     # Update VITE_API_URL
-    sed -i 's|VITE_API_URL=.*|VITE_API_URL=https://djezxf7soso5m.cloudfront.net|g' ../client/.env.production
+    sed -i 's|VITE_API_URL=.*|VITE_API_URL=https://'${CLOUDFRONT_DOMAIN}'|g' ../client/.env.production
     
-    echo "✓ Updated VITE_API_URL to https://djezxf7soso5m.cloudfront.net"
+    echo "✓ Updated VITE_API_URL to https://${CLOUDFRONT_DOMAIN}"
     echo ""
 else
     echo "⚠️  .env.production not found, creating it..."
-    cat > ../client/.env.production << 'EOF'
+    cat > ../client/.env.production << EOF
 # Production Environment
-VITE_API_URL=https://djezxf7soso5m.cloudfront.net
-VITE_FRONTEND_URL=https://djezxf7soso5m.cloudfront.net
+VITE_API_URL=https://${CLOUDFRONT_DOMAIN}
+VITE_FRONTEND_URL=https://${CLOUDFRONT_DOMAIN}
 EOF
     echo "✓ Created .env.production"
     echo ""
@@ -334,7 +335,7 @@ echo ""
 echo "✅ CloudFront now proxies API requests to backend"
 echo ""
 echo "Test API through CloudFront:"
-echo "  curl https://djezxf7soso5m.cloudfront.net/api/category/get-category"
+echo "  curl https://${CLOUDFRONT_DOMAIN}/api/category/get-category"
 echo ""
 echo "After updating frontend, your app will work on HTTPS!"
 echo ""
