@@ -9,7 +9,7 @@ const { initializeMetrics, getMetricsCollector } = require('../middleware/metric
 
 // Initialize metrics collector with configuration
 const metricsCollector = initializeMetrics({
-    region: process.env.AWS_REGION || 'ap-southeast-1',
+    region: process.env.AWS_REGION || 'us-west-2',
     namespace: 'XRestaurant/Application',
     enabled: process.env.NODE_ENV === 'production',
     bufferSize: 20,

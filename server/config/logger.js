@@ -79,7 +79,7 @@ if (isProduction && process.env.AWS_REGION) {
             const date = new Date().toISOString().split('T')[0];
             return `${date}-${process.env.ECS_TASK_ID || 'local'}`;
         },
-        awsRegion: process.env.AWS_REGION || 'ap-southeast-1',
+        awsRegion: process.env.AWS_REGION || 'us-west-2',
         messageFormatter: ({ level, message, ...meta }) => {
             return JSON.stringify({
                 level,

@@ -1,4 +1,4 @@
-#!/bin/bash
+d#!/bin/bash
 
 # Docker Build Script for XRestaurant Backend
 # Supports both MongoDB and PostgreSQL versions
@@ -12,7 +12,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-AWS_REGION="ap-southeast-1"
+AWS_REGION="us-west-2"
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")
 ECR_REPOSITORY="xrestaurant-backend"
 IMAGE_TAG="${1:-latest}"

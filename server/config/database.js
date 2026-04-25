@@ -12,7 +12,7 @@ let sequelize = null;
  */
 async function getDatabaseCredentials() {
     const secretName = process.env.DB_SECRET_NAME || 'xrestaurant/rds/credentials';
-    const region = process.env.AWS_REGION || 'ap-southeast-1';
+    const region = process.env.AWS_REGION || 'us-west-2';
     
     const client = new SecretsManagerClient({ region });
     
